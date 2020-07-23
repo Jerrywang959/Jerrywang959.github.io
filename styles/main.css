@@ -2069,10 +2069,10 @@ pre > span.copy-code:hover {
   font-weight: bold;
 }
 body {
-      background-color: #eee;
+      background-color: #f1f3f5;
     }
     .nav-toggle .line {
-      background-color: #eee !important;
+      background-color: #f1f3f5 !important;
     }.header {
         width: 960px;
         margin: 0 auto;
@@ -2176,22 +2176,28 @@ body {
       color: #fc6423;
       border-bottom-color: #fc6423;
     }.bg-color {
-      background-color: #fffffffe;
+      background-color: #f8f9fafe;
+    }
+    .gemini .blog-header, .gemini .sidebar-wrapper, .gemini .article-wrapper, .gemini .post, .gemini .page, .gemini .section, .gemini .section-box, .gemini .sidebar-box, .gemini .friends-section {
+      border-radius: 15px;
+    }
+    .pisces .blog-header, .pisces .sidebar-wrapper, .pisces .article-wrapper, .pisces .section, .pisces .sidebar-box, .pisces .friends-section {
+      border-radius: 15px;
     }
       .site-meta {
-        background: #000 !important;
+        background: #212529 !important;
       }
       .head-top-line {
-        background: #000 !important;
+        background: #212529 !important;
       }
     .brand {
-      background: #000000fe;
+      background: #fab005fe;
     }
     .main-title, .brand {
-      color: #FFF !important;
+      color: #e3fafc !important;
     }
     .mist .site-title i {
-      background: #FFFFFFfe;
+      background: #e3fafcfe;
     }.box-shadow-wrapper {
       box-shadow: none !important;
     }body {
