@@ -8,7 +8,7 @@
 <meta name="keywords" content="Jerry Blog">
 <meta name="description" content="分享知识与爱">
 <meta name="theme-color" content="#212529">
-<title>JY Blog</title>
+<title>deepin下R编译安装mxnet失败记 | JY Blog</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1595865582563">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/pisces.css">
@@ -39,7 +39,8 @@
   })();
 </script>
 
-  <meta name="description" content="分享知识与爱">
+  <meta name="description" content="deepin下R编译安装mxnet失败记" />
+  <meta name="keywords" content="R,mxnet" />
 </head>
 
 <body>
@@ -88,7 +89,7 @@
             
               
             
-            <li class="nav-item nav-item-active">
+            <li class="nav-item ">
               
               
                 <a href="/archives/" target="_self">
@@ -178,10 +179,26 @@
   <div class="main-continer">
     
     <div
-      class="section-layout  pisces">
+      class="section-layout pisces ">
       <div class="section-layout-wrapper">
-        <div id="sidebarMeta" class="sidebar">
-    
+        
+
+<div class="sidebar">
+  
+    <div class="sidebar-box box-shadow-wrapper bg-color right-motion" id="sidebar">
+      
+        <div class="post-list-sidebar">
+          <div class="sidebar-title">
+            <span id="tocSideBar" class="sidebar-title-item sidebar-title-active">文章目录</span>
+            <span id="metaSideBar" class="sidebar-title-item">站点概览</span>
+          </div>
+        </div>
+      
+      <div class="sidebar-body pisces" id="sidebar_body">
+        
+          
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -223,279 +240,481 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96">安装依赖</a></li>
+<li><a href="#%E7%BC%96%E8%AF%91">编译</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85">安装</a></li>
+<li><a href="#%E5%86%8D%E6%AC%A1%E5%AE%89%E8%A3%85">再次安装</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+
+  </div>
 </div>
+
 <script>
-  let sidebarMeta = document.querySelector('#sidebarMeta');
-  let scheme = 'pisces';
-  let sidebarWrapper = document.querySelector('.sidebar-wrapper');
-  if (sidebarMeta && (scheme === 'pisces' || scheme === 'gemini')) {
-    document.addEventListener('scroll', function(e) {
-      if (document.scrollingElement.scrollTop > parseInt(sidebarMeta.style.marginTop) + 10) {
-        sidebarWrapper.classList.add('home-sidebar-fixed')
-      } else {
-        sidebarWrapper.classList.remove('home-sidebar-fixed')
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
       }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
     });
   }
-  </script>
-        <div class="section-box box-shadow-wrapper">
-          <section class="section archives-section bg-color posts-expand">
-            
 
-<div class="bg-color">
-  <div class="archive-timeline-box">
-    <div class="archive-timeline-title">
-      
-        <h2>非常好！目前共计17篇日志，继续努力！</h2>
-      
-    </div>
-    
-      
-      
-        <div class="node-title">
-          <h2 class="tag-year">2020</h2>
-        </div>    
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
+          
         
-      
-      <a href="https://jerrywang.top/Notion+Gridea搭建博客/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>Notion+Gridea搭建博客</small>
-            </h1>
-          </div>  
       </div>
-      </a>
+    </div>
+  
+</div>
+<script>
+  const SIDEBAR_TITLE_ACTIVE = 'sidebar-title-active';
+  const SIDEBAR_BODY_ACTIVE = 'sidebar-body-active';
+  const SLIDE_UP_IN = 'slide-up-in';
+
+  let sidebar = document.querySelector('#sidebar'),
+  tocSideBar = document.querySelector('#tocSideBar'),
+  metaSideBar = document.querySelector('#metaSideBar'),
+  postToc = document.querySelector('#post_toc'),
+  postSiteMeta = document.querySelector('#post_side_meta'),
+  sidebarTitle = document.querySelector('.sidebar-title'),
+  sidebarBody = document.querySelector('#sidebar_body');
+
+  tocSideBar && tocSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  metaSideBar && metaSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  function toggleSidebar(e) {
+    let currentTitle = document.querySelector("."+SIDEBAR_TITLE_ACTIVE);
+    if (currentTitle == e.srcElement) {
+      return ;
+    }
+    let current, showElement, hideElement;
+    if (e.srcElement == metaSideBar) {
+      showElement = postSiteMeta;
+      hideElement = postToc;
+    } else if (e.srcElement == tocSideBar){
+      showElement = postToc;
+      hideElement = postSiteMeta;
+    }
+    currentTitle.classList.remove(SIDEBAR_TITLE_ACTIVE);
+    e.srcElement.classList.add(SIDEBAR_TITLE_ACTIVE);
+
+    window.Velocity(hideElement, 'stop');
+    window.Velocity(hideElement, 'transition.slideUpOut', {
+      display: 'none',
+      duration: 200,
+      complete: function () {
+        window.Velocity(showElement, 'transition.slideDownIn', {
+          duration: 200
+        });
+      }
+    })
+    hideElement.classList.remove(SIDEBAR_BODY_ACTIVE);
+    showElement.classList.add(SIDEBAR_BODY_ACTIVE);
+  }
+
+  postToc && postToc.addEventListener('transitionend', function() {
+    this.classList.remove(SLIDE_UP_IN);
+  });
+
+  if (sidebarBody) {
+    if (sidebarBody.classList.contains('pisces') || sidebarBody.classList.contains('gemini')) {
+      let hasFix = false;
+      let scrollEl = document.querySelector('.main-continer');
+      let limitTop = document.querySelector('#nav_ul').children.length * 42 + 162;
+      window.addEventListener('scroll', function(e) {
+        if (document.scrollingElement.scrollTop >= limitTop) {
+          if (!hasFix) {
+            sidebar.classList.add('sidebar-fixed');
+            hasFix = true;
+          }
+        } else {
+          if (hasFix) {
+            sidebar.classList.remove('sidebar-fixed');
+            hasFix = false;
+          }
+        }
+      });
+    }
+  }
+  
+</script>
+        <div class="section-box box-shadow-wrapper">
+          <div class="section bg-color post post-page">
+            <header class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="https://jerrywang.top/deepin下R编译安装mxnet失败记/">
+      deepin下R编译安装mxnet失败记
+    </a>
+  </h1>
+  <div class="post-meta">
     
-      
-      
-      <a href="https://jerrywang.top/云服务器搭建RSSHUB/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>云服务器搭建RSSHUB</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span>发布于</span>
+      <span>2020-06-22</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
     
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show">分类于</span>
       
       
-      <a href="https://jerrywang.top/学生云服务器用来做什么/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>学生云服务器用来做什么</small>
-            </h1>
-          </div>  
-      </div>
+      <a href="https://jerrywang.top/h0nK9SiT_e/">
+        <span>R</span>
+      </a>、
+      
+      
+      
+      <a href="https://jerrywang.top/e_xLC-Kl7S/">
+        <span>mxnet</span>
       </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
     
-      
-      
-      <a href="https://jerrywang.top/hello-gridea/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>hello-gridea</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>5分钟</span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>1201<span class="pc-show">字数</span></span>
+    </span>
     
-      
-      
-      <a href="https://jerrywang.top/deepin实现远程桌面控制/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>deepin实现远程桌面控制</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
     
-      
-      
-      <a href="https://jerrywang.top/Adguardhome自建dns服务器/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>Adguardhome自建dns服务器</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
     
-      
-      
-      <a href="https://jerrywang.top/about/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>about</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/使用google colab实现JuliaGPU加速/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>使用google colab实现JuliaGPU加速</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/应用程序融入deepin桌面环境/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>应用程序融入deepin桌面环境</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/本地搭建sharelatex协作服务器/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>本地搭建sharelatex协作服务器</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/一个可用国内 HTTPS 代理 (解决打不开)/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-11
-              <small>一个可用国内 HTTPS 代理 (解决打不开)</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/搭建适用于notion的国内HTTPS代理/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-04
-              <small>搭建适用于notion的国内HTTPS代理</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/升级内核导致无法使用VMware的解决/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-02
-              <small>升级内核导致无法使用VMware的解决</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/deepin下一些命令和配置文件/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-23
-              <small>deepin下一些命令和配置文件</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/Deepin下WPS公式不能正常显示/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>Deepin下WPS公式不能正常显示</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/Deepin编译最新linux内核/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>Deepin编译最新linux内核</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/deepin下R编译安装mxnet失败记/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>deepin下R编译安装mxnet失败记</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span id="/deepin下R编译安装mxnet失败记/" data-flag-title="deepin下R编译安装mxnet失败记" class="meta-item pc-show leancloud_visitors">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-eye"></i>
+      <span>浏览量：<span class="leancloud-visitors-count"></span></span>
+    </span>
     
   </div>
-  
-<div class="page bg-color">
-  <ul class="pagination-ul">
-    
-    
-      
-        <li class="pagination-li pagination-active">
-            <a href="/archives/page/../">
-              1
-            </a>
-        </li>
-      
-    
-    
-  </ul>
-</div>
-</div>
+</header>
+            <div class="post-body next-md-body" id="post_body">
+              <p>最近, mxnet的官网发生了重大变更, 编译安装R的文章找不到了, <s>因此我试了很多次, 最后在github储存库找到了</s>~~<a href="https://github.com/apache/incubator-mxnet/blob/24d88a2cdec3e0ab8f4fe0e436eb0015e9ccfd47/docs/static_site/src/pages/get_started/ubuntu_setup.md">原始文档</a>~~<s>, 完成安装, 因此记录下步骤, 以免丢失,</s> 浪费了很多时间, 也还是失败了<br>
+系统环境: deepin v20 beta, R4.0.1, gcc version 8.3.0 (Uos 8.3.0.2-1+deepin), mxnet 1.6.0</p>
+<h1 id="安装依赖">安装依赖</h1>
+<pre><code class="language-Shell">sudo apt-get update
+sudo apt-get install -y build-essential git ninja-build ccache libopenblas-dev libopencv-dev cmake
+</code></pre>
+<h1 id="编译">编译</h1>
+<p>克隆储存库并复制配置文件. 这个过程需要比较久的时间, 建议对git使用代理</p>
+<pre><code class="language-Shell">git clone --recursive https://github.com/apache/incubator-mxnet.git mxnet
+cd mxnet
+cp config/linux.cmake config.cmake  # or config/linux_gpu.cmake for build with CUDA
+</code></pre>
+<p>因为我编译的是cpu版本, 对配置也没有其他要求, 因此不需要修改配置, 直接编译</p>
+<pre><code class="language-Shell">rm -rf build
+mkdir -p build &amp;&amp; cd build
+cmake -GNinja ..
+cmake --build . --parallel 4
+</code></pre>
+<p><code>--parallel</code>后面的参数为你所选择的CPU核心数量, 虽然选择越多会编译越快, 但也会因为内存不足而无法编译. 我的笔记本电脑有16G内存, 并行10核心编译会卡死, 因此我选择了较低的核心数量, 方便同时做其他事情.</p>
+<h1 id="安装">安装</h1>
+<p>系统安装依赖</p>
+<pre><code class="language-Shell">sudo apt-get update
+sudo apt-get install -y r-base-core r-cran-devtools libcairo2-dev libxml2-dev
+</code></pre>
+<p>其中 <code>r-cran-devtools</code>不是必要的, 因为 <code>r-cran-devtools</code> 只支持R3.5, 而此时我的R的版本已经达到4.0, 安装不了, 但并不影响我安装mxnet<br>
+R安装特定的包</p>
+<pre><code class="language-R">R
+&gt; install.packages(&quot;roxygen2&quot;)
+</code></pre>
+<p>完成之后, 在mxnet目录下, 输入下面的命令和R绑定</p>
+<pre><code class="language-Shell">make -f R-package/Makefile rpkg
+</code></pre>
+<p>然而, 我得到了找不到<code>R-package/Makefile</code>这个文件的报错信息, 原来这个文件只在mxnet 1.6.0以上存在, 于是我又切换到1.7.x分支, 尝试完成绑定<br>
+输入命令后, 发现需要下载其他R的安装包, 于是我停止编译, 主动进入R安装相应的包(使用清华源会快一点), 然而, 我发现 <code>igraph</code> 这一包无法安装, 出现如下的报错信息</p>
+<pre><code class="language-Shell">Error: package or namespace load failed for ‘igraph’ in dyn.load(file, DLLpath = DLLpath, ...):
+ 无法载入共享目标对象‘/home/jerrywang/R/x86_64-pc-linux-gnu-library/4.0/00LOCK-igraph/00new/igraph/libs/igraph.so’：:
+  libgfortran.so.4: 无法打开共享对象文件: 没有那个文件或目录
+</code></pre>
+<p>查了很多才发现是需要安装一下的fortran库的, 输入命令</p>
+<pre><code class="language-Shell">sudo apt install libgfortran4
+</code></pre>
+<p>终于, 安装 <code>igraph</code> 成功, 于是安装好其他所需库后, 继续输入上面的命令和R绑定.<br>
+最后的结果还是出了问题, 安装失败, 原因归结于在安装串了版本, 于是我放弃了自己手动安装. 选择稳定的正式版安装</p>
+<h1 id="再次安装">再次安装</h1>
+<p>下载mxnet 1.6.0 正式签名版源代码, 使用一键安装脚本一键安装. 手动把脚本内的 <code>repo</code> 换成国内镜像<br>
+你以为这就结束了? Wrong<br>
+正式签名版本的mxnet里面居然没有也没有<code>R-package</code>这一文件夹, 安装失败. 于是我选择再次尝试git源代码, 把git仓库中的 1.6.x分支的<code>R-package</code> 复制到此处, 继续安装,<strong>失败</strong></p>
+<h1 id="总结">总结</h1>
+<p>最终的结果是失败, 也许正是因为mxnet的整改, 我本不应该折腾, 想法太多了. <strong>整改不保留原来的版本, 实在是太过于激进啊.</strong><br>
+不得不说, mxnet的版本管理和文档是有问题的, 当初学者无所适从. 或者是说我的英文太差没找到地方. 是有一键安装脚本的, 在 <code>setup-utils</code> 里面.<br>
+然而, 我也发现了一些mxnet对自身建设的不足</p>
+<ol>
+<li>新版的mxnet还没有正式发行, 编译安装指导已经变成了新的方式</li>
+<li>更改网站没有dev的版本, 直接在正式的网站更改, 以至于一段时间内网站资料缺失严重, 给初学者以很大困难 (一般想不到到github找源文件)<br>
+不过, 这都是在慢慢变好的, 新版的mxnet不需要sudo权限就可以安装, 这样使得系统更加干净.<br>
+另一个bug是 新版的 cmake 相比于旧版的 make 虽然在编译速度上可能更快, 但这样同时也导致了更多的内存占用, 以至于电脑卡死, 给人造成很不爽的感觉</li>
+</ol>
+<p>对个人的启示:<br>
+我不是写底层的, 我也不是debug的, 我是调包侠, 没有专业的指引就不要折腾. 虽然这样失去很多自主性, 但其实, 我是没能力折腾的 😕</p>
 
-          </section>
+            </div>
+            <div class="post-footer">
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      Jerry Wang
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://jerrywang.top/deepin下R编译安装mxnet失败记/" title="deepin下R编译安装mxnet失败记">https://jerrywang.top/deepin下R编译安装mxnet失败记/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+  <div class="tags">
+    
+      <a href="https://jerrywang.top/h0nK9SiT_e/"># R</a>
+    
+      <a href="https://jerrywang.top/e_xLC-Kl7S/"># mxnet</a>
+    
+  </div>
+  <div class="nav">
+    <div class="nav-prev">
+      
+        <i class="fa fa-chevron-left"></i>
+        <a class="nav-pc-next" title="Deepin编译最新linux内核" href="https://jerrywang.top/Deepin编译最新linux内核/">Deepin编译最新linux内核</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="Deepin编译最新linux内核" href="https://jerrywang.top/Deepin编译最新linux内核/">上一篇</a>
+      
+    </div>
+    <div class="nav-next">
+      
+    </div>
+  </div>
+</div>
+            
+  <script src="https://cdn.jsdelivr.net/npm/valine@1.4.4/dist/Valine.min.js"></script>
+<div id="vcomments" style="padding: 10px 0px 0px 0px"></div>
+
+<style>
+  .v .veditor {
+    min-height: 10rem;
+    background-image: url('https://upimage.alexhchu.com/2020/04/21/47eda59424daa.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-color: rgba(255, 255, 255, 0);
+    resize: none;
+  }
+
+  .v .vwrap {
+    border: 1px solid #000 !important;
+  }
+
+  .v .vbtn {
+    padding: .4rem 1.2rem !important;
+    border-color: #fff !important;
+    background-color: #49b1f5 !important;
+    color: #fff !important;
+    font-size: .7rem !important;
+  }
+
+  .v .vcards .vcard .vh .vmeta .vat {
+    padding: 0 .8rem !important;
+    border: 1px solid #00c4b6 !important;
+    border-radius: 5px !important;
+    color: #00c4b6 !important;
+  }
+</style>
+<script>
+  new Valine({
+    el: '#vcomments',
+    appId: 'Eqy0fVUtsfkANpWSjIUYkIT2-gzGzoHsz',
+    appKey: 'i9tf7JI6tAXTlruivvk73mor',
+    avatar: '',
+    placeholder: '',
+    pageSize: '',
+    lang: 'zh-cn',
+    visitor: 'true' === 'true',
+    highlight: 'true' === 'true',
+    avatarForce: 'true' === 'true',
+  });
+</script>
+
+          </div>
         </div>
       </div>
     </div>
@@ -665,6 +884,36 @@
   // 代码高亮
   hljs.initHighlightingOnLoad();
 
+</script>
+    <div class="light-box" id="light_box"></div>
+<script>
+  let imgs = document.querySelectorAll('.post-body img');
+  let lightBox = document.querySelector('#light_box');
+  lightBox.addEventListener('mousedown', (e) => {
+    e.preventDefault()
+  })
+  lightBox.addEventListener('mousewheel', (e) => {
+    e.preventDefault()
+  })
+  let width = window.innerWidth * 0.8;
+  lightBox.onclick = () => {
+    let img = lightBox.querySelector('img');
+    lightBox.style = '';
+    img && img.remove();
+  }
+  imgs.forEach(item => {
+    item.onclick = function (e) {
+      let lightImg = document.createElement('img');
+      lightImg.src = this.src;
+      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
+      lightImg.style = `width: ${width}px; border: 1px solid #fff; border-radius: 2px;`;
+      lightImg.onclick = function () {
+        lightBox.style = '';
+        this.remove();
+      }
+      lightBox.append(lightImg);
+    }
+  })
 </script>
   </div>
 </body>
@@ -1622,6 +1871,5 @@ R安装特定的包&lt;/p&gt;
 
 
 <script src=" /media/js/cool.js"></script>
-
 
 </html>

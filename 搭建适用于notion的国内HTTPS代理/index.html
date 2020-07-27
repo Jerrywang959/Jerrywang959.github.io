@@ -8,7 +8,7 @@
 <meta name="keywords" content="Jerry Blog">
 <meta name="description" content="分享知识与爱">
 <meta name="theme-color" content="#212529">
-<title>JY Blog</title>
+<title>搭建适用于notion的国内HTTPS代理 | JY Blog</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1595865582563">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/pisces.css">
@@ -39,7 +39,8 @@
   })();
 </script>
 
-  <meta name="description" content="分享知识与爱">
+  <meta name="description" content="搭建适用于notion的国内HTTPS代理" />
+  <meta name="keywords" content="notion,proxy" />
 </head>
 
 <body>
@@ -88,7 +89,7 @@
             
               
             
-            <li class="nav-item nav-item-active">
+            <li class="nav-item ">
               
               
                 <a href="/archives/" target="_self">
@@ -178,10 +179,26 @@
   <div class="main-continer">
     
     <div
-      class="section-layout  pisces">
+      class="section-layout pisces ">
       <div class="section-layout-wrapper">
-        <div id="sidebarMeta" class="sidebar">
-    
+        
+
+<div class="sidebar">
+  
+    <div class="sidebar-box box-shadow-wrapper bg-color right-motion" id="sidebar">
+      
+        <div class="post-list-sidebar">
+          <div class="sidebar-title">
+            <span id="tocSideBar" class="sidebar-title-item sidebar-title-active">文章目录</span>
+            <span id="metaSideBar" class="sidebar-title-item">站点概览</span>
+          </div>
+        </div>
+      
+      <div class="sidebar-body pisces" id="sidebar_body">
+        
+          
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -223,279 +240,561 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8">云服务器</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85tinyproxy%E5%B9%B6%E9%85%8D%E7%BD%AE">安装tinyproxy并配置</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85stunnel%E5%B9%B6%E9%85%8D%E7%BD%AE">安装Stunnel并配置</a></li>
+<li><a href="#%E5%BC%80%E7%AB%AF%E5%8F%A3%E5%92%8C%E9%AA%8C%E8%AF%81">开端口和验证</a></li>
+<li><a href="#%E7%BC%96%E5%86%99pac%E6%96%87%E4%BB%B6">编写pac文件</a></li>
+</ul>
+
+  </div>
 </div>
+
 <script>
-  let sidebarMeta = document.querySelector('#sidebarMeta');
-  let scheme = 'pisces';
-  let sidebarWrapper = document.querySelector('.sidebar-wrapper');
-  if (sidebarMeta && (scheme === 'pisces' || scheme === 'gemini')) {
-    document.addEventListener('scroll', function(e) {
-      if (document.scrollingElement.scrollTop > parseInt(sidebarMeta.style.marginTop) + 10) {
-        sidebarWrapper.classList.add('home-sidebar-fixed')
-      } else {
-        sidebarWrapper.classList.remove('home-sidebar-fixed')
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
       }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
     });
   }
-  </script>
-        <div class="section-box box-shadow-wrapper">
-          <section class="section archives-section bg-color posts-expand">
-            
 
-<div class="bg-color">
-  <div class="archive-timeline-box">
-    <div class="archive-timeline-title">
-      
-        <h2>非常好！目前共计17篇日志，继续努力！</h2>
-      
-    </div>
-    
-      
-      
-        <div class="node-title">
-          <h2 class="tag-year">2020</h2>
-        </div>    
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
+          
         
-      
-      <a href="https://jerrywang.top/Notion+Gridea搭建博客/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>Notion+Gridea搭建博客</small>
-            </h1>
-          </div>  
       </div>
-      </a>
+    </div>
+  
+</div>
+<script>
+  const SIDEBAR_TITLE_ACTIVE = 'sidebar-title-active';
+  const SIDEBAR_BODY_ACTIVE = 'sidebar-body-active';
+  const SLIDE_UP_IN = 'slide-up-in';
+
+  let sidebar = document.querySelector('#sidebar'),
+  tocSideBar = document.querySelector('#tocSideBar'),
+  metaSideBar = document.querySelector('#metaSideBar'),
+  postToc = document.querySelector('#post_toc'),
+  postSiteMeta = document.querySelector('#post_side_meta'),
+  sidebarTitle = document.querySelector('.sidebar-title'),
+  sidebarBody = document.querySelector('#sidebar_body');
+
+  tocSideBar && tocSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  metaSideBar && metaSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  function toggleSidebar(e) {
+    let currentTitle = document.querySelector("."+SIDEBAR_TITLE_ACTIVE);
+    if (currentTitle == e.srcElement) {
+      return ;
+    }
+    let current, showElement, hideElement;
+    if (e.srcElement == metaSideBar) {
+      showElement = postSiteMeta;
+      hideElement = postToc;
+    } else if (e.srcElement == tocSideBar){
+      showElement = postToc;
+      hideElement = postSiteMeta;
+    }
+    currentTitle.classList.remove(SIDEBAR_TITLE_ACTIVE);
+    e.srcElement.classList.add(SIDEBAR_TITLE_ACTIVE);
+
+    window.Velocity(hideElement, 'stop');
+    window.Velocity(hideElement, 'transition.slideUpOut', {
+      display: 'none',
+      duration: 200,
+      complete: function () {
+        window.Velocity(showElement, 'transition.slideDownIn', {
+          duration: 200
+        });
+      }
+    })
+    hideElement.classList.remove(SIDEBAR_BODY_ACTIVE);
+    showElement.classList.add(SIDEBAR_BODY_ACTIVE);
+  }
+
+  postToc && postToc.addEventListener('transitionend', function() {
+    this.classList.remove(SLIDE_UP_IN);
+  });
+
+  if (sidebarBody) {
+    if (sidebarBody.classList.contains('pisces') || sidebarBody.classList.contains('gemini')) {
+      let hasFix = false;
+      let scrollEl = document.querySelector('.main-continer');
+      let limitTop = document.querySelector('#nav_ul').children.length * 42 + 162;
+      window.addEventListener('scroll', function(e) {
+        if (document.scrollingElement.scrollTop >= limitTop) {
+          if (!hasFix) {
+            sidebar.classList.add('sidebar-fixed');
+            hasFix = true;
+          }
+        } else {
+          if (hasFix) {
+            sidebar.classList.remove('sidebar-fixed');
+            hasFix = false;
+          }
+        }
+      });
+    }
+  }
+  
+</script>
+        <div class="section-box box-shadow-wrapper">
+          <div class="section bg-color post post-page">
+            <header class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="https://jerrywang.top/搭建适用于notion的国内HTTPS代理/">
+      搭建适用于notion的国内HTTPS代理
+    </a>
+  </h1>
+  <div class="post-meta">
     
-      
-      
-      <a href="https://jerrywang.top/云服务器搭建RSSHUB/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>云服务器搭建RSSHUB</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span>发布于</span>
+      <span>2020-07-04</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
     
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show">分类于</span>
       
       
-      <a href="https://jerrywang.top/学生云服务器用来做什么/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>学生云服务器用来做什么</small>
-            </h1>
-          </div>  
-      </div>
+      <a href="https://jerrywang.top/8V0CIKNRL/">
+        <span>notion</span>
+      </a>、
+      
+      
+      
+      <a href="https://jerrywang.top/ov8RD7pAvL/">
+        <span>proxy</span>
       </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
     
-      
-      
-      <a href="https://jerrywang.top/hello-gridea/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>hello-gridea</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>9分钟</span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>2220<span class="pc-show">字数</span></span>
+    </span>
     
-      
-      
-      <a href="https://jerrywang.top/deepin实现远程桌面控制/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>deepin实现远程桌面控制</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
     
-      
-      
-      <a href="https://jerrywang.top/Adguardhome自建dns服务器/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>Adguardhome自建dns服务器</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
     
-      
-      
-      <a href="https://jerrywang.top/about/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>about</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/使用google colab实现JuliaGPU加速/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>使用google colab实现JuliaGPU加速</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/应用程序融入deepin桌面环境/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>应用程序融入deepin桌面环境</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/本地搭建sharelatex协作服务器/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>本地搭建sharelatex协作服务器</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/一个可用国内 HTTPS 代理 (解决打不开)/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-11
-              <small>一个可用国内 HTTPS 代理 (解决打不开)</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/搭建适用于notion的国内HTTPS代理/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-04
-              <small>搭建适用于notion的国内HTTPS代理</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/升级内核导致无法使用VMware的解决/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-02
-              <small>升级内核导致无法使用VMware的解决</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/deepin下一些命令和配置文件/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-23
-              <small>deepin下一些命令和配置文件</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/Deepin下WPS公式不能正常显示/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>Deepin下WPS公式不能正常显示</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/Deepin编译最新linux内核/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>Deepin编译最新linux内核</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/deepin下R编译安装mxnet失败记/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>deepin下R编译安装mxnet失败记</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span id="/搭建适用于notion的国内HTTPS代理/" data-flag-title="搭建适用于notion的国内HTTPS代理" class="meta-item pc-show leancloud_visitors">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-eye"></i>
+      <span>浏览量：<span class="leancloud-visitors-count"></span></span>
+    </span>
     
   </div>
-  
-<div class="page bg-color">
-  <ul class="pagination-ul">
-    
-    
-      
-        <li class="pagination-li pagination-active">
-            <a href="/archives/page/../">
-              1
-            </a>
-        </li>
-      
-    
-    
-  </ul>
-</div>
-</div>
+</header>
+            <div class="post-body next-md-body" id="post_body">
+              <p>家里网络线路不太好, 使用用notion简直劝退, 偶然之中发现阿里云连接notion不丢包, 于是选择了阿里云来搭建代理, 建好之后, 连接简直飞速, 于是写下这个教程, 希望能对同样热爱notion的你我有所帮助. 若自己觉得搭建太麻烦, 也可以使用<a href="https://www.notion.so/cnotion/HTTPS-facf4156a31745f0b1758351f7f67cf1">现成的代理</a>. 如何配置HTTPS代理, 也见<a href="https://www.notion.so/cnotion/HTTPS-facf4156a31745f0b1758351f7f67cf1">此页面</a>.</p>
+<h1 id="云服务器">云服务器</h1>
+<p>首先你得有一台云服务器, 唯一对云服务器的要求即是宽带, 一方面是足够大的宽带, 一般而言, 若有5Mbps, 则够好几人一起用了, 若只有1Mbps, 一个人用的都够呛. 另一方面是线路的选择, 初步经验的判断, 阿里云上海的服务器连接notion延迟较低(140ms), 因此我选择阿里云上海的服务器, 也可以根据自己的喜好和条件选择合适的云服务商.<br>
+<strong>购买云服务器的步骤略过, SSH连接的方法这里也不赘述</strong>, 可以自行百度搜索, 有很多教程.<br>
+接下来我将选择系统版本为 Ubuntu 20.04 作为例子, 其他的Linux发行版与此类似<br>
+拿到一台<strong>新的</strong>云服务器之后, SSH连接, 先更新系统, 输入</p>
+<pre><code class="language-Shell">sudo apt update &amp;&amp; sudo apt upgrade -y
+</code></pre>
+<p>如果你是用非root用户登录, 则需要输入密码, 直接输入就行了, 不过你是看不到的.<br>
+然后你会看到很多很多的英文字符和数字. 如果中间出现了什么特殊的画面, 直接回车就行. 等到最下面的progress完成后, 输入如下命令重启远程服务器</p>
+<pre><code class="language-Shell">reboot
+</code></pre>
+<p>然后, 再次SSH登录</p>
+<h1 id="安装tinyproxy并配置">安装tinyproxy并配置</h1>
+<p>输入以下命令安装tinyproxy</p>
+<pre><code class="language-Shell">sudo apt install tinyproxy -y
+</code></pre>
+<p>进入tinyproxy的配置文件夹</p>
+<pre><code class="language-Shell">cd /etc/tinyproxy
+</code></pre>
+<p>此时我们进入了<code>tinyproxy</code>的文件夹, 你会看到终端的显示由 <code>root@xxxxxx:~#</code> 变成了 <code>root@/xxxxx: etc/tinyproxy#</code> , 查看当前目录下的文件</p>
+<pre><code class="language-Shell">root@xxxxxxx:/etc/tinyproxy# dir
+tinyproxy.conf
+</code></pre>
+<p>发现只有一个<code>tinyproxy.conf</code> 这一配置文件, 于是打开它并编辑它, 在SSH中, 只能使用命令行界面编辑文件, 我用的是 <code>vim</code> . 操作上用的其实也不是传统的<code>vim</code>方法, 也比较简单. 编辑<code>tinyproxy.conf</code>文件(因为我用的root用户登录的, 所以不存在权限问题)</p>
+<pre><code class="language-Shell">vim tinyproxy.conf
+</code></pre>
+<p>然后会看到这样一个界面<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/5f9452c0-9e39-4d3e-9bbb-839bd7b80a4e/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103125Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=82c92238088925225fe0933d0446521e2ca7c5eab542194fcf395abea05e84a3&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"><br>
+配置文件中, 每一行都是独立的, 若一行前面有<code>#</code>, 则表示这一行是注释, 不起任何效果.<br>
+接下来, <strong>切换到英文输入法</strong>, 方便操作<br>
+输入 <code>i</code> , 就会发现左下角多了个<code>INSERT</code>, 表明此时你可以用一般word的方法输入或修改了, 但是只能用键盘.<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/7693882c-4cf4-4ffe-9479-43aaa6b82a90/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103126Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=0e95d6883c07260c7c73e3380808051c1cebfb6e91dc1e5a4f8fdcc131a5c407&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"><br>
+按键盘中的 上下左右的 &quot;下&quot; 键 可以往下滚动查看文件<br>
+找到 <code>MaxSpareServers 20</code> 改为 <code>MaxSpareServers 1024</code> , 改这一项的目的好像是为了方便更多的人访问, 如果你一个人用, 可以不改<br>
+找到 <code>Allow</code> 这里, 这一部分表示可以访问此代理的ip地址, 如果你想开放<code>http</code>代理, 则把 <code>Allow 127.0.0.1</code> 前面输入一个<code>#</code> , 以达到允许所有ip地址的效果. 我这里没有更改(因为我选择不开放http代理<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/edcf9bd0-88f4-470e-837f-24d29f2debe3/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103128Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=e90dd36e78eb800fe7b689ea735be35727c2a7833b2b70acf2d209e31a031f99&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"><br>
+找到 <code>Filter</code> 这里, 这一部分的意思是<code>tinyproxy</code> 可访问目标的配置文件地址, 直接取消前面的 <code>#</code> 以达到开启过滤的效果<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/dd0a587b-3922-4c9a-81a9-2a5ddd8583eb/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103128Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=87f3159315abff9615e53c59a60c45a42f6e8c94ddf174497029d40d4405cbbe&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"><br>
+找到 <code>FilterDefualtDeny</code> 这里, 去掉最后一行前面的 <code>#</code> (前面的几行都是说明注释, 不可去掉). 如果不去掉 <code>#</code> 或者改为 <code>FilterDefualtDeny No</code> , 表明你上面的过滤文件是黑名单(只不能访问这些地址). 而改成<code>FilterDefualtDeny Yes</code> 即是白名单(只能访问这些地址, 以防自己的代理被滥用)<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/248d77d0-02ca-4a4d-a608-e5bd6d4fa15c/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103129Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=916418dd2d91962a8d7556daab886a528ef43c66c44625417c1fcdc7b8025953&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"><br>
+编辑好之后, 先按一下<code>Esc</code> , 你会发现, 左下角的<code>Insert</code> 消失了, 然后按<code>shift :</code> 会发现左下角出现了一个<code>:</code> , 然后 输入 <code>wq</code> , 然后回车, 以便达到保存和退出出的效果.<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/8b468769-30b0-4107-85f1-c12d846de09e/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103129Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=9b050009fcf6f71e9c4ea31589cd3d975a82e286d9a2da8665b767bc6fd6bbe5&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"><br>
+接下来, 我们由回到了命令行界面, 然后编辑过滤文件(这个文件本身是不存在的, 但是vim会自动创建)</p>
+<pre><code class="language-Shell">vim /etc/tinyproxy/filter
+</code></pre>
+<p>同样输入<code>i</code>开始编辑, 写入我们需要允许访问的域名, 如果你的ssh工具支持粘贴, 直接粘贴就可以了, 如下, 这里的规则表示了主域名和其所有子域名. 你也可以根据自己的需要进行配置</p>
+<pre><code class="language-Plain">amplitude.com
+intercom.io
+notion.so
+loggly.com
+segment.com
+intercomcdn.com
+unsplash.com
+amazonaws.com
+</code></pre>
+<p>然后<code>Esc</code>, <code>shift :</code>,<code>wq</code>, 回车退出保存. 重启tinyproxy以使配置文件生效</p>
+<pre><code class="language-Shell">service tinyproxy restart
+</code></pre>
+<h1 id="安装stunnel并配置">安装Stunnel并配置</h1>
+<p>输入如下命令安装<code>stunnel</code></p>
+<pre><code class="language-Shell">sudo apt install stunnel -y
+</code></pre>
+<p>进入<code>stunnel</code>的配置文件目录</p>
+<pre><code class="language-Shell">cd /etc/stunnel
+</code></pre>
+<p>查看当前文件夹下的内容</p>
+<pre><code class="language-Shell">dir
+</code></pre>
+<p>发现只有一个<code>README</code>, 因此我们要创建配置文件</p>
+<pre><code class="language-Shell">vim stunnel.conf
+</code></pre>
+<p>输入</p>
+<pre><code class="language-Plain">[https]
+accept = 443
+connect = 127.0.0.1:8888
+cert = /etc/stunnel/tls/cert.pem
+key = /etc/stunnel/tls/key.pem
+</code></pre>
+<p>这表明, 我们建立的这个服务的名字叫做<code>https</code>(理论上你叫什么名字都可以), 输出的是443端口, 输入的是本地的8888端口(<code>tinyproxy</code>的<code>http</code>端口), 下面两个是证书和密钥的位置(<code>tls</code>加密需要). 网上很多教程是自己本地生成证书, 这要求使用者需要自行导入证书, 太麻烦了, 因此我选择申请证书机构颁发的证书, 因为穷, 只能选择<a href="https://freessl.cn/">免费证书</a>, 教程在<a href="https://blog.freessl.cn/how-to-use-freessl-issue-free-certificates/">这里</a>.<br>
+得到证书后, 我们会有两个文件, 一个是<code>full_chain.pem</code>, 我们称之为证书, 另一个是 <code>private.key</code>我们称之为密钥. 然后我们进入我们预先选择的证书目录(目录不存在, 需要创建)</p>
+<pre><code class="language-Shell">mkdir /etc/stunnel/tls &amp;&amp; cd /etc/stunnel/tls
+</code></pre>
+<p>先粘贴我们的证书, 再粘贴我们的密钥, 在自己的电脑上, 选择用<code>txt</code>文本编辑器打开复制, 如果无法用文本编辑器打开, 则把文件的后缀改成<code>txt</code>再尝试</p>
+<pre><code class="language-Shell">vim  /etc/stunnel/tls/cert.pem
+</code></pre>
+<pre><code class="language-Shell">vim /etc/stunnel/tls/key.pem
+</code></pre>
+<p>然后选择重启服务以使得配置生效</p>
+<pre><code class="language-Shell">service stunnel4 restart 
+</code></pre>
+<p>完成后, 需要对你申请证书的域名增加A解析到你服务器的ip地址, 这里也不再赘述. 解析生效的时间最多10分钟.</p>
+<h1 id="开端口和验证">开端口和验证</h1>
+<p>我所使用的阿里云服务器, 貌似没有用Linux自带的防火墙软件, 要在阿里云的界面开端口才有效. 而我用的是443端口, 其默认是开启的, 所有我也不用额外开端口. 直接验证即可<br>
+我选择的是<code>chrome</code> 浏览器的<code>swithyoemga</code>插件以实现验证. 新增一个代理模式. 选择<code>https</code> 协议, 输入地址和端口, 我代理服务器像这样<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/be4d487c-4760-4370-b7a5-3fbfe2606832/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103129Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=f400cb610c7b0105ceb98011acdde802086e4a3e80e3484fcc29d820d0249f6f&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"><br>
+然后切换为该代理的全局模式<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/86e4d221-0a7b-4c03-b7ff-fb817e9c855a/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103130Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=c5d4fe9de31a3c6271b060dbd96154e695124ad9569ef6b86ec6d45c09bd9cf6&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"><br>
+访问<code>https://notion.so</code>,未出现问题, 则表示白名单验证成功.<br>
+然而, 我们还是会发现有一些域名无法加载, 即使已经允许它访问了, 这就不是国内代理所不能解决的了, 但是并不影响使用<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/8acb37f4-29c1-4feb-899e-ad9e04f86ff8/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103130Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=43044d347778258d0f93b82fa64b3cd21407952cf777b6a173b42cc8952cec9b&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"><br>
+在同样的模式下, 访问 <code>https://www.baidu.com</code>出现此页面, 表示<code>tinyproxy</code> 的过滤规则有效, 你也可以访问其他页面以验证<br>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/7dc719e5-86c3-4f6a-980c-cbe2e4c15b22/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200726%2Fus-west-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20200726T103131Z&amp;X-Amz-Expires=86400&amp;X-Amz-Signature=d1619a78c02e3677c725723f41e41e9d0740acd73fc454c55e8102ca00af9c52&amp;X-Amz-SignedHeaders=host" alt="" loading="lazy"></p>
+<h1 id="编写pac文件">编写pac文件</h1>
+<p>因为此<code>https</code>代理能只能访问<code>notion</code> 相关页面, 作为全局代理是很不合适的, 如果没有<code>Swichyomega</code> , 则会比较尴尬. 因此有一种方法叫做<code>proxy auto config</code>, 即通过一个<code>pac</code>文件实现代理自动配置. 然而我并不会会写<code>pac</code>文件(我不会javascript), 因此就选择选择用<code>swichyoemga</code>生成<code>pac</code>文件. <s>但是无论我怎么尝试, 怎么改变</s>~~<code>pac</code>~~<s>文件的写法</s>, <code>pac</code>文件无法在我的安卓手机上起作用. 以下是<code>Swichyomega</code>导出的一个例子</p>
+<pre><code class="language-JavaScript">var FindProxyForURL = function(init, profiles) {
+    return function(url, host) {
+        &quot;use strict&quot;;
+        var result = init, scheme = url.substr(0, url.indexOf(&quot;:&quot;));
+        do {
+            result = profiles[result];
+            if (typeof result === &quot;function&quot;) result = result(url, host, scheme);
+        } while (typeof result !== &quot;string&quot; || result.charCodeAt(0) === 43);
+        return result;
+    };
+}(&quot;+notion&quot;, {
+    &quot;+notion&quot;: function(url, host, scheme) {
+        &quot;use strict&quot;;
+        if (/(?:^|\.)notion\.so$/.test(host)) return &quot;+ali_tiny_tls&quot;;
+        if (/(?:^|\.)amplitude\.com$/.test(host)) return &quot;+ali_tiny_tls&quot;;
+        if (/(?:^|\.)intercom\.io$/.test(host)) return &quot;+ali_tiny_tls&quot;;
+        if (/(?:^|\.)loggly\.com$/.test(host)) return &quot;+ali_tiny_tls&quot;;
+        if (/(?:^|\.)segment\.com$/.test(host)) return &quot;+ali_tiny_tls&quot;;
+        if (/(?:^|\.)intercomcdn\.com$/.test(host)) return &quot;+ali_tiny_tls&quot;;
+        if (/(?:^|\.)unsplash\.com$/.test(host)) return &quot;+ali_tiny_tls&quot;;
+        if (/(?:^|\.)amazonaws\.com$/.test(host)) return &quot;+ali_tiny_tls&quot;;
+        return &quot;DIRECT&quot;;
+    },
+    &quot;+ali_tiny_tls&quot;: function(url, host, scheme) {
+        &quot;use strict&quot;;
+        if (/^127\.0\.0\.1$/.test(host) || /^::1$/.test(host) || /^localhost$/.test(host)) return &quot;DIRECT&quot;;
+        return &quot;HTTPS proxy2.jerrywang.top:443&quot;;
+    }
+});
+</code></pre>
 
-          </section>
+            </div>
+            <div class="post-footer">
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      Jerry Wang
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://jerrywang.top/搭建适用于notion的国内HTTPS代理/" title="搭建适用于notion的国内HTTPS代理">https://jerrywang.top/搭建适用于notion的国内HTTPS代理/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+  <div class="tags">
+    
+      <a href="https://jerrywang.top/8V0CIKNRL/"># notion</a>
+    
+      <a href="https://jerrywang.top/ov8RD7pAvL/"># proxy</a>
+    
+  </div>
+  <div class="nav">
+    <div class="nav-prev">
+      
+        <i class="fa fa-chevron-left"></i>
+        <a class="nav-pc-next" title="一个可用国内 HTTPS 代理 (解决打不开)" href="https://jerrywang.top/一个可用国内 HTTPS 代理 (解决打不开)/">一个可用国内 HTTPS 代理 (解决打不开)</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="一个可用国内 HTTPS 代理 (解决打不开)" href="https://jerrywang.top/一个可用国内 HTTPS 代理 (解决打不开)/">上一篇</a>
+      
+    </div>
+    <div class="nav-next">
+      
+        <a class="nav-pc-next" title="升级内核导致无法使用VMware的解决" href="https://jerrywang.top/升级内核导致无法使用VMware的解决/">升级内核导致无法使用VMware的解决</a>
+        <a class="nav-mobile-next" title="升级内核导致无法使用VMware的解决" href="https://jerrywang.top/升级内核导致无法使用VMware的解决/">下一篇</a>
+        <i class="fa fa-chevron-right"></i>
+      
+    </div>
+  </div>
+</div>
+            
+  <script src="https://cdn.jsdelivr.net/npm/valine@1.4.4/dist/Valine.min.js"></script>
+<div id="vcomments" style="padding: 10px 0px 0px 0px"></div>
+
+<style>
+  .v .veditor {
+    min-height: 10rem;
+    background-image: url('https://upimage.alexhchu.com/2020/04/21/47eda59424daa.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-color: rgba(255, 255, 255, 0);
+    resize: none;
+  }
+
+  .v .vwrap {
+    border: 1px solid #000 !important;
+  }
+
+  .v .vbtn {
+    padding: .4rem 1.2rem !important;
+    border-color: #fff !important;
+    background-color: #49b1f5 !important;
+    color: #fff !important;
+    font-size: .7rem !important;
+  }
+
+  .v .vcards .vcard .vh .vmeta .vat {
+    padding: 0 .8rem !important;
+    border: 1px solid #00c4b6 !important;
+    border-radius: 5px !important;
+    color: #00c4b6 !important;
+  }
+</style>
+<script>
+  new Valine({
+    el: '#vcomments',
+    appId: 'Eqy0fVUtsfkANpWSjIUYkIT2-gzGzoHsz',
+    appKey: 'i9tf7JI6tAXTlruivvk73mor',
+    avatar: '',
+    placeholder: '',
+    pageSize: '',
+    lang: 'zh-cn',
+    visitor: 'true' === 'true',
+    highlight: 'true' === 'true',
+    avatarForce: 'true' === 'true',
+  });
+</script>
+
+          </div>
         </div>
       </div>
     </div>
@@ -665,6 +964,36 @@
   // 代码高亮
   hljs.initHighlightingOnLoad();
 
+</script>
+    <div class="light-box" id="light_box"></div>
+<script>
+  let imgs = document.querySelectorAll('.post-body img');
+  let lightBox = document.querySelector('#light_box');
+  lightBox.addEventListener('mousedown', (e) => {
+    e.preventDefault()
+  })
+  lightBox.addEventListener('mousewheel', (e) => {
+    e.preventDefault()
+  })
+  let width = window.innerWidth * 0.8;
+  lightBox.onclick = () => {
+    let img = lightBox.querySelector('img');
+    lightBox.style = '';
+    img && img.remove();
+  }
+  imgs.forEach(item => {
+    item.onclick = function (e) {
+      let lightImg = document.createElement('img');
+      lightImg.src = this.src;
+      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
+      lightImg.style = `width: ${width}px; border: 1px solid #fff; border-radius: 2px;`;
+      lightImg.onclick = function () {
+        lightBox.style = '';
+        this.remove();
+      }
+      lightBox.append(lightImg);
+    }
+  })
 </script>
   </div>
 </body>
@@ -1622,6 +1951,5 @@ R安装特定的包&lt;/p&gt;
 
 
 <script src=" /media/js/cool.js"></script>
-
 
 </html>

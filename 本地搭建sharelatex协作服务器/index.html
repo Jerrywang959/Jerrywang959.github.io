@@ -8,7 +8,7 @@
 <meta name="keywords" content="Jerry Blog">
 <meta name="description" content="分享知识与爱">
 <meta name="theme-color" content="#212529">
-<title>JY Blog</title>
+<title>本地搭建sharelatex协作服务器 | JY Blog</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1595865582563">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/pisces.css">
@@ -39,7 +39,8 @@
   })();
 </script>
 
-  <meta name="description" content="分享知识与爱">
+  <meta name="description" content="本地搭建sharelatex协作服务器" />
+  <meta name="keywords" content="Latex" />
 </head>
 
 <body>
@@ -88,7 +89,7 @@
             
               
             
-            <li class="nav-item nav-item-active">
+            <li class="nav-item ">
               
               
                 <a href="/archives/" target="_self">
@@ -178,10 +179,26 @@
   <div class="main-continer">
     
     <div
-      class="section-layout  pisces">
+      class="section-layout pisces ">
       <div class="section-layout-wrapper">
-        <div id="sidebarMeta" class="sidebar">
-    
+        
+
+<div class="sidebar">
+  
+    <div class="sidebar-box box-shadow-wrapper bg-color right-motion" id="sidebar">
+      
+        <div class="post-list-sidebar">
+          <div class="sidebar-title">
+            <span id="tocSideBar" class="sidebar-title-item sidebar-title-active">文章目录</span>
+            <span id="metaSideBar" class="sidebar-title-item">站点概览</span>
+          </div>
+        </div>
+      
+      <div class="sidebar-body pisces" id="sidebar_body">
+        
+          
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -223,279 +240,490 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BAsharelatex%E5%8D%8F%E4%BD%9Cweb%E5%BA%94%E7%94%A8">为什么要本地搭建sharelatex协作web应用</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85docker-ce">安装docker-ce</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85docker-compose">安装docker-compose</a></li>
+<li><a href="#pull-images">pull images</a></li>
+<li><a href="#%E4%B8%8B%E8%BD%BDdocker-composeyml%E6%96%87%E4%BB%B6">下载docker-compose.yml文件</a></li>
+<li><a href="#%E8%BF%90%E8%A1%8Csharelatex">运行sharelatex</a></li>
+<li><a href="#%E6%9B%B4%E5%A4%9A%E4%B8%AA%E6%80%A7%E5%8C%96%E8%AE%BE%E7%BD%AE">更多个性化设置</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE">参考文献</a></li>
+</ul>
+
+  </div>
 </div>
+
 <script>
-  let sidebarMeta = document.querySelector('#sidebarMeta');
-  let scheme = 'pisces';
-  let sidebarWrapper = document.querySelector('.sidebar-wrapper');
-  if (sidebarMeta && (scheme === 'pisces' || scheme === 'gemini')) {
-    document.addEventListener('scroll', function(e) {
-      if (document.scrollingElement.scrollTop > parseInt(sidebarMeta.style.marginTop) + 10) {
-        sidebarWrapper.classList.add('home-sidebar-fixed')
-      } else {
-        sidebarWrapper.classList.remove('home-sidebar-fixed')
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
       }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
     });
   }
-  </script>
-        <div class="section-box box-shadow-wrapper">
-          <section class="section archives-section bg-color posts-expand">
-            
 
-<div class="bg-color">
-  <div class="archive-timeline-box">
-    <div class="archive-timeline-title">
-      
-        <h2>非常好！目前共计17篇日志，继续努力！</h2>
-      
-    </div>
-    
-      
-      
-        <div class="node-title">
-          <h2 class="tag-year">2020</h2>
-        </div>    
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
+          
         
-      
-      <a href="https://jerrywang.top/Notion+Gridea搭建博客/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>Notion+Gridea搭建博客</small>
-            </h1>
-          </div>  
       </div>
-      </a>
+    </div>
+  
+</div>
+<script>
+  const SIDEBAR_TITLE_ACTIVE = 'sidebar-title-active';
+  const SIDEBAR_BODY_ACTIVE = 'sidebar-body-active';
+  const SLIDE_UP_IN = 'slide-up-in';
+
+  let sidebar = document.querySelector('#sidebar'),
+  tocSideBar = document.querySelector('#tocSideBar'),
+  metaSideBar = document.querySelector('#metaSideBar'),
+  postToc = document.querySelector('#post_toc'),
+  postSiteMeta = document.querySelector('#post_side_meta'),
+  sidebarTitle = document.querySelector('.sidebar-title'),
+  sidebarBody = document.querySelector('#sidebar_body');
+
+  tocSideBar && tocSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  metaSideBar && metaSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  function toggleSidebar(e) {
+    let currentTitle = document.querySelector("."+SIDEBAR_TITLE_ACTIVE);
+    if (currentTitle == e.srcElement) {
+      return ;
+    }
+    let current, showElement, hideElement;
+    if (e.srcElement == metaSideBar) {
+      showElement = postSiteMeta;
+      hideElement = postToc;
+    } else if (e.srcElement == tocSideBar){
+      showElement = postToc;
+      hideElement = postSiteMeta;
+    }
+    currentTitle.classList.remove(SIDEBAR_TITLE_ACTIVE);
+    e.srcElement.classList.add(SIDEBAR_TITLE_ACTIVE);
+
+    window.Velocity(hideElement, 'stop');
+    window.Velocity(hideElement, 'transition.slideUpOut', {
+      display: 'none',
+      duration: 200,
+      complete: function () {
+        window.Velocity(showElement, 'transition.slideDownIn', {
+          duration: 200
+        });
+      }
+    })
+    hideElement.classList.remove(SIDEBAR_BODY_ACTIVE);
+    showElement.classList.add(SIDEBAR_BODY_ACTIVE);
+  }
+
+  postToc && postToc.addEventListener('transitionend', function() {
+    this.classList.remove(SLIDE_UP_IN);
+  });
+
+  if (sidebarBody) {
+    if (sidebarBody.classList.contains('pisces') || sidebarBody.classList.contains('gemini')) {
+      let hasFix = false;
+      let scrollEl = document.querySelector('.main-continer');
+      let limitTop = document.querySelector('#nav_ul').children.length * 42 + 162;
+      window.addEventListener('scroll', function(e) {
+        if (document.scrollingElement.scrollTop >= limitTop) {
+          if (!hasFix) {
+            sidebar.classList.add('sidebar-fixed');
+            hasFix = true;
+          }
+        } else {
+          if (hasFix) {
+            sidebar.classList.remove('sidebar-fixed');
+            hasFix = false;
+          }
+        }
+      });
+    }
+  }
+  
+</script>
+        <div class="section-box box-shadow-wrapper">
+          <div class="section bg-color post post-page">
+            <header class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="https://jerrywang.top/本地搭建sharelatex协作服务器/">
+      本地搭建sharelatex协作服务器
+    </a>
+  </h1>
+  <div class="post-meta">
     
-      
-      
-      <a href="https://jerrywang.top/云服务器搭建RSSHUB/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>云服务器搭建RSSHUB</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span>发布于</span>
+      <span>2020-07-24</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
     
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show">分类于</span>
       
       
-      <a href="https://jerrywang.top/学生云服务器用来做什么/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>学生云服务器用来做什么</small>
-            </h1>
-          </div>  
-      </div>
+      <a href="https://jerrywang.top/latex/">
+        <span>Latex</span>
       </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
     
-      
-      
-      <a href="https://jerrywang.top/hello-gridea/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>hello-gridea</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>4分钟</span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>848<span class="pc-show">字数</span></span>
+    </span>
     
-      
-      
-      <a href="https://jerrywang.top/deepin实现远程桌面控制/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>deepin实现远程桌面控制</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
     
-      
-      
-      <a href="https://jerrywang.top/Adguardhome自建dns服务器/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>Adguardhome自建dns服务器</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
     
-      
-      
-      <a href="https://jerrywang.top/about/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>about</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/使用google colab实现JuliaGPU加速/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>使用google colab实现JuliaGPU加速</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/应用程序融入deepin桌面环境/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>应用程序融入deepin桌面环境</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/本地搭建sharelatex协作服务器/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>本地搭建sharelatex协作服务器</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/一个可用国内 HTTPS 代理 (解决打不开)/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-11
-              <small>一个可用国内 HTTPS 代理 (解决打不开)</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/搭建适用于notion的国内HTTPS代理/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-04
-              <small>搭建适用于notion的国内HTTPS代理</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/升级内核导致无法使用VMware的解决/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-02
-              <small>升级内核导致无法使用VMware的解决</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/deepin下一些命令和配置文件/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-23
-              <small>deepin下一些命令和配置文件</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/Deepin下WPS公式不能正常显示/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>Deepin下WPS公式不能正常显示</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/Deepin编译最新linux内核/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>Deepin编译最新linux内核</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/deepin下R编译安装mxnet失败记/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>deepin下R编译安装mxnet失败记</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span id="/本地搭建sharelatex协作服务器/" data-flag-title="本地搭建sharelatex协作服务器" class="meta-item pc-show leancloud_visitors">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-eye"></i>
+      <span>浏览量：<span class="leancloud-visitors-count"></span></span>
+    </span>
     
   </div>
-  
-<div class="page bg-color">
-  <ul class="pagination-ul">
-    
-    
-      
-        <li class="pagination-li pagination-active">
-            <a href="/archives/page/../">
-              1
-            </a>
-        </li>
-      
-    
-    
-  </ul>
-</div>
-</div>
+</header>
+            <div class="post-body next-md-body" id="post_body">
+              <h1 id="为什么要本地搭建sharelatex协作web应用">为什么要本地搭建sharelatex协作web应用</h1>
+<p>有一个网站，叫做overleaf，是一个非常好用的latex在线编辑网站，集协作、聊天、<strong>latex代码补全</strong>等多种功能为一体的latex写作网站，最重要的是，<strong>debug</strong>比较容易，出现小错误也会强制编译成功，非常适合新手。然而，这个网站的服务器在国外，网络连接不太稳定，科学上网也常常会出现连接中断的情况，很烦。一次偶然的情况下，我发现overleaf居然在github上开源了，而且还可以用docker一键本地部署，于是开始操作起来。</p>
+<h1 id="安装docker-ce">安装docker-ce</h1>
+<p>dokcer-ce是较新版本的docker，而且是社区版。我的使用的系统是的deepin15.11，也许由于某些问题（我太菜了），我无法正常使用mongo，因此我在使用VMware创建了一个ubuntu server 18.04，在此server上安装docker-ce。<br>
+<strong>卸载老版本</strong></p>
+<pre><code class="language-Plain">sudo apt-get remove docker docker-engine docker.io
+</code></pre>
+<p><strong>从apt源安装</strong></p>
+<pre><code class="language-Plain">sudo apt-get update
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable&quot;
+sudo apt-get update
+sudo apt-get install docker-ce
+</code></pre>
+<p>安装好了之后，验证是否安装成功。</p>
+<pre><code class="language-Plain">sudo docker -v
+</code></pre>
+<p><img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586352347164.png" alt="" loading="lazy"><br>
+UTOOLS1586352347164.png<br>
+这表示安装成功，版本为19.03.8。因为我是在一个单独的虚拟机上跑docker，而且这个虚拟机只跑某一个服务，因此我没有设置docker用户组，直接用sudo权限运行docker。要想设置普通用户使用docker，参见<br>
+<a href="https://blog.csdn.net/u013948858/article/details/78429954">【Docker】非root用户加入docker用户组省去sudo （三）</a></p>
+<h1 id="安装docker-compose">安装docker-compose</h1>
+<p>这是一个协同多个docker容器的工具，而且可以更加容易的设置环境变量。<br>
+输入以下代码安装docker-compose 1.25.4（速度较慢）</p>
+<pre><code class="language-Plain">curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+</code></pre>
+<p>输入以下命令</p>
+<pre><code class="language-Plain">docker-compose -v           
+</code></pre>
+<p>出现以下信息则表示安装成功<br>
+<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586352886310.png" alt="" loading="lazy"><br>
+UTOOLS1586352886310.png</p>
+<h1 id="pull-images">pull images</h1>
+<p>sharelatex官方的image是不包括完整的textlive的，需要自行安装完整版，这里我找到了其他开发者已经集成texlive-2019完整版的sharelatex，依次输入以下命令</p>
+<pre><code class="language-Plain">sudo docker pull mongo
+sudo docker pull redis
+sudo docker pull flodointhecloud/sharelatex-texlive2019
+</code></pre>
+<p>完整版texlive的镜像大约9G多，pull下载需要一段时间，国内速度太慢可以选择使用镜像站点，参见<a href="https://blog.csdn.net/whatday/article/details/86770609">docker 设置国内镜像源</a></p>
+<h1 id="下载docker-composeyml文件">下载docker-compose.yml文件</h1>
+<p>overleaf在github上提供了构建sharelatex的yml文件，下载即可<a href="https://raw.githubusercontent.com/overleaf/overleaf/master/docker-compose.yml">链接</a> （可能打不开，可以自定义域名解析，详见百度）<br>
+下载好后修改以下内容</p>
+<ol>
+<li>container_name改为flodointhecloud/sharelatex-texlive2019</li>
+</ol>
+<h1 id="运行sharelatex">运行sharelatex</h1>
+<p>进入docker-compose.yml所在的目录，输入以下命令</p>
+<pre><code class="language-Plain">sudo docker-compose up 
+</code></pre>
+<p>稍等片刻，就启动成功了。<br>
+VMware设置桥接网络，输入虚拟机的ip地址即可进入sharelatex的主页，我这里是http://192.168.1.8/<br>
+<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586354080411.png" alt="" loading="lazy"><br>
+UTOOLS1586354080411.png<br>
+输入http://192.168.1.8/launchpad设置第一个管理员，设置完成后输入你的设置信息即可登录成功。<br>
+<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586354054553.png" alt="" loading="lazy"><br>
+UTOOLS1586354054553.png</p>
+<h1 id="更多个性化设置">更多个性化设置</h1>
+<ol>
+<li>设置环境变量：详见<a href="https://github.com/overleaf/overleaf/wiki">overleaf官方wiki</a></li>
+<li>通过内网穿透将其放在公网访问</li>
+</ol>
+<h1 id="参考文献">参考文献</h1>
+<p><a href="https://www.jianshu.com/p/83483c35bfcd">ubuntu 18.04 安装docker ce</a><br>
+<a href="https://github.com/docker/compose/releases">docker-compose releases页面</a></p>
 
-          </section>
+            </div>
+            <div class="post-footer">
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      Jerry Wang
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://jerrywang.top/本地搭建sharelatex协作服务器/" title="本地搭建sharelatex协作服务器">https://jerrywang.top/本地搭建sharelatex协作服务器/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+  <div class="tags">
+    
+      <a href="https://jerrywang.top/latex/"># Latex</a>
+    
+  </div>
+  <div class="nav">
+    <div class="nav-prev">
+      
+        <i class="fa fa-chevron-left"></i>
+        <a class="nav-pc-next" title="应用程序融入deepin桌面环境" href="https://jerrywang.top/应用程序融入deepin桌面环境/">应用程序融入deepin桌面环境</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="应用程序融入deepin桌面环境" href="https://jerrywang.top/应用程序融入deepin桌面环境/">上一篇</a>
+      
+    </div>
+    <div class="nav-next">
+      
+        <a class="nav-pc-next" title="一个可用国内 HTTPS 代理 (解决打不开)" href="https://jerrywang.top/一个可用国内 HTTPS 代理 (解决打不开)/">一个可用国内 HTTPS 代理 (解决打不开)</a>
+        <a class="nav-mobile-next" title="一个可用国内 HTTPS 代理 (解决打不开)" href="https://jerrywang.top/一个可用国内 HTTPS 代理 (解决打不开)/">下一篇</a>
+        <i class="fa fa-chevron-right"></i>
+      
+    </div>
+  </div>
+</div>
+            
+  <script src="https://cdn.jsdelivr.net/npm/valine@1.4.4/dist/Valine.min.js"></script>
+<div id="vcomments" style="padding: 10px 0px 0px 0px"></div>
+
+<style>
+  .v .veditor {
+    min-height: 10rem;
+    background-image: url('https://upimage.alexhchu.com/2020/04/21/47eda59424daa.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-color: rgba(255, 255, 255, 0);
+    resize: none;
+  }
+
+  .v .vwrap {
+    border: 1px solid #000 !important;
+  }
+
+  .v .vbtn {
+    padding: .4rem 1.2rem !important;
+    border-color: #fff !important;
+    background-color: #49b1f5 !important;
+    color: #fff !important;
+    font-size: .7rem !important;
+  }
+
+  .v .vcards .vcard .vh .vmeta .vat {
+    padding: 0 .8rem !important;
+    border: 1px solid #00c4b6 !important;
+    border-radius: 5px !important;
+    color: #00c4b6 !important;
+  }
+</style>
+<script>
+  new Valine({
+    el: '#vcomments',
+    appId: 'Eqy0fVUtsfkANpWSjIUYkIT2-gzGzoHsz',
+    appKey: 'i9tf7JI6tAXTlruivvk73mor',
+    avatar: '',
+    placeholder: '',
+    pageSize: '',
+    lang: 'zh-cn',
+    visitor: 'true' === 'true',
+    highlight: 'true' === 'true',
+    avatarForce: 'true' === 'true',
+  });
+</script>
+
+          </div>
         </div>
       </div>
     </div>
@@ -665,6 +893,36 @@
   // 代码高亮
   hljs.initHighlightingOnLoad();
 
+</script>
+    <div class="light-box" id="light_box"></div>
+<script>
+  let imgs = document.querySelectorAll('.post-body img');
+  let lightBox = document.querySelector('#light_box');
+  lightBox.addEventListener('mousedown', (e) => {
+    e.preventDefault()
+  })
+  lightBox.addEventListener('mousewheel', (e) => {
+    e.preventDefault()
+  })
+  let width = window.innerWidth * 0.8;
+  lightBox.onclick = () => {
+    let img = lightBox.querySelector('img');
+    lightBox.style = '';
+    img && img.remove();
+  }
+  imgs.forEach(item => {
+    item.onclick = function (e) {
+      let lightImg = document.createElement('img');
+      lightImg.src = this.src;
+      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
+      lightImg.style = `width: ${width}px; border: 1px solid #fff; border-radius: 2px;`;
+      lightImg.onclick = function () {
+        lightBox.style = '';
+        this.remove();
+      }
+      lightBox.append(lightImg);
+    }
+  })
 </script>
   </div>
 </body>
@@ -1622,6 +1880,5 @@ R安装特定的包&lt;/p&gt;
 
 
 <script src=" /media/js/cool.js"></script>
-
 
 </html>

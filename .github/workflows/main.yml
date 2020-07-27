@@ -1,0 +1,33 @@
+name: Push to oss
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '0 0 * * *'
+  push:
+    branches:
+      - master
+      - page
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+      with:
+        ref: page
+    - uses: manyuanrong/setup-ossutil@v1.0
+      with:
+        # endpoint 可以去oss控制台上查看
+        endpoint: "oss-cn-shenzhen.aliyuncs.com"
+        # 使用我们之前配置在secrets里面的accesskeys来配置ossutil
+        access-key-id: ${{ secrets.OSS_KEY_ID }}
+        access-key-secret: ${{ secrets.OSS_KEY_SECRET }}
+    - name: Deply To OSS 
+      run: ossutil cp ./ oss://jerry-blog/ -rf

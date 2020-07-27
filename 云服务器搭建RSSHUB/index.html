@@ -8,7 +8,7 @@
 <meta name="keywords" content="Jerry Blog">
 <meta name="description" content="分享知识与爱">
 <meta name="theme-color" content="#212529">
-<title>JY Blog</title>
+<title>云服务器搭建RSSHUB | JY Blog</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1595865582563">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/pisces.css">
@@ -39,7 +39,8 @@
   })();
 </script>
 
-  <meta name="description" content="分享知识与爱">
+  <meta name="description" content="云服务器搭建RSSHUB" />
+  <meta name="keywords" content="RSS" />
 </head>
 
 <body>
@@ -88,7 +89,7 @@
             
               
             
-            <li class="nav-item nav-item-active">
+            <li class="nav-item ">
               
               
                 <a href="/archives/" target="_self">
@@ -178,10 +179,26 @@
   <div class="main-continer">
     
     <div
-      class="section-layout  pisces">
+      class="section-layout pisces ">
       <div class="section-layout-wrapper">
-        <div id="sidebarMeta" class="sidebar">
-    
+        
+
+<div class="sidebar">
+  
+    <div class="sidebar-box box-shadow-wrapper bg-color right-motion" id="sidebar">
+      
+        <div class="post-list-sidebar">
+          <div class="sidebar-title">
+            <span id="tocSideBar" class="sidebar-title-item sidebar-title-active">文章目录</span>
+            <span id="metaSideBar" class="sidebar-title-item">站点概览</span>
+          </div>
+        </div>
+      
+      <div class="sidebar-body pisces" id="sidebar_body">
+        
+          
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -223,279 +240,467 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#rsshub%E6%98%AF%E4%BB%80%E4%B9%88">RSSHUB是什么</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85docker-ce%E5%92%8Cdocker-compose">安装docker-ce和docker-compose</a></li>
+<li><a href="#%E4%B8%8B%E8%BD%BDdocker-composeyml">下载docker-compose.yml</a></li>
+<li><a href="#%E6%88%91%E5%9C%A8%E7%94%A8%E7%9A%84%E5%87%A0%E4%B8%AA%E8%B7%AF%E7%94%B1">我在用的几个路由</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE">参考文献</a></li>
+</ul>
+
+  </div>
 </div>
+
 <script>
-  let sidebarMeta = document.querySelector('#sidebarMeta');
-  let scheme = 'pisces';
-  let sidebarWrapper = document.querySelector('.sidebar-wrapper');
-  if (sidebarMeta && (scheme === 'pisces' || scheme === 'gemini')) {
-    document.addEventListener('scroll', function(e) {
-      if (document.scrollingElement.scrollTop > parseInt(sidebarMeta.style.marginTop) + 10) {
-        sidebarWrapper.classList.add('home-sidebar-fixed')
-      } else {
-        sidebarWrapper.classList.remove('home-sidebar-fixed')
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
       }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
     });
   }
-  </script>
-        <div class="section-box box-shadow-wrapper">
-          <section class="section archives-section bg-color posts-expand">
-            
 
-<div class="bg-color">
-  <div class="archive-timeline-box">
-    <div class="archive-timeline-title">
-      
-        <h2>非常好！目前共计17篇日志，继续努力！</h2>
-      
-    </div>
-    
-      
-      
-        <div class="node-title">
-          <h2 class="tag-year">2020</h2>
-        </div>    
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
+          
         
-      
-      <a href="https://jerrywang.top/Notion+Gridea搭建博客/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>Notion+Gridea搭建博客</small>
-            </h1>
-          </div>  
       </div>
-      </a>
+    </div>
+  
+</div>
+<script>
+  const SIDEBAR_TITLE_ACTIVE = 'sidebar-title-active';
+  const SIDEBAR_BODY_ACTIVE = 'sidebar-body-active';
+  const SLIDE_UP_IN = 'slide-up-in';
+
+  let sidebar = document.querySelector('#sidebar'),
+  tocSideBar = document.querySelector('#tocSideBar'),
+  metaSideBar = document.querySelector('#metaSideBar'),
+  postToc = document.querySelector('#post_toc'),
+  postSiteMeta = document.querySelector('#post_side_meta'),
+  sidebarTitle = document.querySelector('.sidebar-title'),
+  sidebarBody = document.querySelector('#sidebar_body');
+
+  tocSideBar && tocSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  metaSideBar && metaSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  function toggleSidebar(e) {
+    let currentTitle = document.querySelector("."+SIDEBAR_TITLE_ACTIVE);
+    if (currentTitle == e.srcElement) {
+      return ;
+    }
+    let current, showElement, hideElement;
+    if (e.srcElement == metaSideBar) {
+      showElement = postSiteMeta;
+      hideElement = postToc;
+    } else if (e.srcElement == tocSideBar){
+      showElement = postToc;
+      hideElement = postSiteMeta;
+    }
+    currentTitle.classList.remove(SIDEBAR_TITLE_ACTIVE);
+    e.srcElement.classList.add(SIDEBAR_TITLE_ACTIVE);
+
+    window.Velocity(hideElement, 'stop');
+    window.Velocity(hideElement, 'transition.slideUpOut', {
+      display: 'none',
+      duration: 200,
+      complete: function () {
+        window.Velocity(showElement, 'transition.slideDownIn', {
+          duration: 200
+        });
+      }
+    })
+    hideElement.classList.remove(SIDEBAR_BODY_ACTIVE);
+    showElement.classList.add(SIDEBAR_BODY_ACTIVE);
+  }
+
+  postToc && postToc.addEventListener('transitionend', function() {
+    this.classList.remove(SLIDE_UP_IN);
+  });
+
+  if (sidebarBody) {
+    if (sidebarBody.classList.contains('pisces') || sidebarBody.classList.contains('gemini')) {
+      let hasFix = false;
+      let scrollEl = document.querySelector('.main-continer');
+      let limitTop = document.querySelector('#nav_ul').children.length * 42 + 162;
+      window.addEventListener('scroll', function(e) {
+        if (document.scrollingElement.scrollTop >= limitTop) {
+          if (!hasFix) {
+            sidebar.classList.add('sidebar-fixed');
+            hasFix = true;
+          }
+        } else {
+          if (hasFix) {
+            sidebar.classList.remove('sidebar-fixed');
+            hasFix = false;
+          }
+        }
+      });
+    }
+  }
+  
+</script>
+        <div class="section-box box-shadow-wrapper">
+          <div class="section bg-color post post-page">
+            <header class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="https://jerrywang.top/云服务器搭建RSSHUB/">
+      云服务器搭建RSSHUB
+    </a>
+  </h1>
+  <div class="post-meta">
     
-      
-      
-      <a href="https://jerrywang.top/云服务器搭建RSSHUB/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>云服务器搭建RSSHUB</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span>发布于</span>
+      <span>2020-07-24</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
     
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show">分类于</span>
       
       
-      <a href="https://jerrywang.top/学生云服务器用来做什么/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>学生云服务器用来做什么</small>
-            </h1>
-          </div>  
-      </div>
+      <a href="https://jerrywang.top/SOlfVlH7K/">
+        <span>RSS</span>
       </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
     
-      
-      
-      <a href="https://jerrywang.top/hello-gridea/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>hello-gridea</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>4分钟</span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>861<span class="pc-show">字数</span></span>
+    </span>
     
-      
-      
-      <a href="https://jerrywang.top/deepin实现远程桌面控制/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>deepin实现远程桌面控制</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
     
-      
-      
-      <a href="https://jerrywang.top/Adguardhome自建dns服务器/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>Adguardhome自建dns服务器</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
     
-      
-      
-      <a href="https://jerrywang.top/about/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>about</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/使用google colab实现JuliaGPU加速/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>使用google colab实现JuliaGPU加速</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/应用程序融入deepin桌面环境/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>应用程序融入deepin桌面环境</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/本地搭建sharelatex协作服务器/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-24
-              <small>本地搭建sharelatex协作服务器</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/一个可用国内 HTTPS 代理 (解决打不开)/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-11
-              <small>一个可用国内 HTTPS 代理 (解决打不开)</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/搭建适用于notion的国内HTTPS代理/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-04
-              <small>搭建适用于notion的国内HTTPS代理</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/升级内核导致无法使用VMware的解决/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              07-02
-              <small>升级内核导致无法使用VMware的解决</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/deepin下一些命令和配置文件/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-23
-              <small>deepin下一些命令和配置文件</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/Deepin下WPS公式不能正常显示/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>Deepin下WPS公式不能正常显示</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/Deepin编译最新linux内核/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>Deepin编译最新linux内核</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
-    
-      
-      
-      <a href="https://jerrywang.top/deepin下R编译安装mxnet失败记/">
-        <div class="motion-warpper tag-archive-node">
-          <div class="tag-node">
-            <h1>
-              06-22
-              <small>deepin下R编译安装mxnet失败记</small>
-            </h1>
-          </div>  
-      </div>
-      </a>
+    <span id="/云服务器搭建RSSHUB/" data-flag-title="云服务器搭建RSSHUB" class="meta-item pc-show leancloud_visitors">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-eye"></i>
+      <span>浏览量：<span class="leancloud-visitors-count"></span></span>
+    </span>
     
   </div>
-  
-<div class="page bg-color">
-  <ul class="pagination-ul">
-    
-    
-      
-        <li class="pagination-li pagination-active">
-            <a href="/archives/page/../">
-              1
-            </a>
-        </li>
-      
-    
-    
-  </ul>
-</div>
-</div>
+</header>
+            <div class="post-body next-md-body" id="post_body">
+              <h1 id="rsshub是什么">RSSHUB是什么</h1>
+<p>RSSHUB是一个容易操作的自定义rss源的开源应用，集成了很多热门的信息源，可以即时生成自己所需要的rss信息订阅源。<br>
+虽然rsshub有提供官方的免费rss源接口，但是更加有效（很多网站反爬）、更加安全（使用自己账号的token更加安全）的是自己在服务器上部署rsshub订阅源。于是我在腾讯学生云服务器上部署了这一应用，具体过程如下。</p>
+<h1 id="安装docker-ce和docker-compose">安装docker-ce和docker-compose</h1>
+<p>不得不说，docker真的给应用的部署带来了巨大的方便。我用的是Debian 9 系统，依次输入以下的代码安装docker-ce和docker-compose</p>
+<pre><code class="language-Plain">sudo apt-get remove docker docker-engine docker.io
+sudo apt-get update
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   &quot;deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) \
+   stable&quot;
+sudo apt-get update
+sudo apt-get install docker-ce
+curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+</code></pre>
+<p>更详细安装内容可见<a href="http://jerrywang.top/2020/04/08/%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-sharelatex-%E5%8D%8F%E4%BD%9C%E6%9C%8D%E5%8A%A1%E5%99%A8/">本地搭建sharelatex协作服务器</a></p>
+<h1 id="下载docker-composeyml">下载docker-compose.yml</h1>
+<p>文件地址为<a href="https://raw.githubusercontent.com/DIYgod/RSSHub/master/docker-compose.yml">docker-compose.yml</a><br>
+运行以下的命令</p>
+<pre><code class="language-Plain">wget https://raw.githubusercontent.com/DIYgod/RSSHub/master/docker-compose.yml
+docker-compose up
+</code></pre>
+<p>此时打开“http://服务器的ip:1200”，若出现rsshub的图标和相关信息，则表示安装成功。<br>
+安装成功后，rss订阅源为http://服务器的ip:1200/文档中所说明的路由</p>
+<h1 id="我在用的几个路由">我在用的几个路由</h1>
+<p>rsshub的文档中提供了很多路由，路由的意思即是对应的rss源的路径，加在rsshub运行地址的后面即可。然而rsshub中有很多路由，并不是所有的我们都用得上，这里我总结一下自己常用的路由。<br>
+<strong>微信公众号</strong><br>
+微信公众号可谓是相当重要的一个信息获得渠道了。rsshub提供了很多个微信公众号的路由，我目前用的是二十次幂的来源，这个来源理论上包括所有的公众号，还可以通过添加参数输出公众号的全文。<br>
+在<a href="https://www.ershicimi.com/">二十次幂的网站</a>查找公众号，如果搜索不到，则可以自主添加。打开公众号的主页，在URL中找到对应的公众号id，例如，CSDN公众号的id为204<br>
+<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586676723651.png" alt="" loading="lazy"><br>
+UTOOLS1586676723651.png<br>
+那么，对应的rss订阅源为<code>http://服务器ip:rsshub端口/wechat/ershicimi/204</code>，若想添加为全文输入，则在后面加入<code>?mode=fulltext</code>，即<code>http://服务器ip:rsshub端口/wechat/ershicimi/204?mode=fulltext</code><br>
+<strong>微博</strong><br>
+我常用的是某个博主的微博，在电脑上打开微博官网，找到某个博主，在URL中找到其id，例如：蔡徐坤的微博id为caizicaixukun。<br>
+<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586677728283.png" alt="" loading="lazy"><br>
+UTOOLS1586677728283.png<br>
+那么，对应的rss订阅源为http://服务器ip:rsshub端口/weibo/user/caizicaixukun/1，后面的1表示输出视频。<br>
+<strong>其他</strong><br>
+除此之外，我还使用了一些不需要配置具体信息的rss订阅源，相当于通过rsshub爬去信息，具体如下：<br>
+切记，在google已经放弃rss当下，使用rss的目的是为了减少被巨量的信息所冲击，添加太多的rss源不利于信息整理。<br>
+更多信息的rss源路由，详见<a href="https://docs.rsshub.app/">rsshub官方文档</a>。</p>
+<h1 id="参考文献">参考文献</h1>
+<ol>
+<li><a href="https://www.jianshu.com/p/83483c35bfcd">ubuntu 18.04 安装docker ce</a></li>
+<li><a href="https://github.com/docker/compose/releases">docker-compose releases页面</a></li>
+</ol>
 
-          </section>
+            </div>
+            <div class="post-footer">
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      Jerry Wang
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://jerrywang.top/云服务器搭建RSSHUB/" title="云服务器搭建RSSHUB">https://jerrywang.top/云服务器搭建RSSHUB/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+  <div class="tags">
+    
+      <a href="https://jerrywang.top/SOlfVlH7K/"># RSS</a>
+    
+  </div>
+  <div class="nav">
+    <div class="nav-prev">
+      
+        <i class="fa fa-chevron-left"></i>
+        <a class="nav-pc-next" title="Notion+Gridea搭建博客" href="https://jerrywang.top/Notion+Gridea搭建博客/">Notion+Gridea搭建博客</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="Notion+Gridea搭建博客" href="https://jerrywang.top/Notion+Gridea搭建博客/">上一篇</a>
+      
+    </div>
+    <div class="nav-next">
+      
+        <a class="nav-pc-next" title="学生云服务器用来做什么" href="https://jerrywang.top/学生云服务器用来做什么/">学生云服务器用来做什么</a>
+        <a class="nav-mobile-next" title="学生云服务器用来做什么" href="https://jerrywang.top/学生云服务器用来做什么/">下一篇</a>
+        <i class="fa fa-chevron-right"></i>
+      
+    </div>
+  </div>
+</div>
+            
+  <script src="https://cdn.jsdelivr.net/npm/valine@1.4.4/dist/Valine.min.js"></script>
+<div id="vcomments" style="padding: 10px 0px 0px 0px"></div>
+
+<style>
+  .v .veditor {
+    min-height: 10rem;
+    background-image: url('https://upimage.alexhchu.com/2020/04/21/47eda59424daa.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-color: rgba(255, 255, 255, 0);
+    resize: none;
+  }
+
+  .v .vwrap {
+    border: 1px solid #000 !important;
+  }
+
+  .v .vbtn {
+    padding: .4rem 1.2rem !important;
+    border-color: #fff !important;
+    background-color: #49b1f5 !important;
+    color: #fff !important;
+    font-size: .7rem !important;
+  }
+
+  .v .vcards .vcard .vh .vmeta .vat {
+    padding: 0 .8rem !important;
+    border: 1px solid #00c4b6 !important;
+    border-radius: 5px !important;
+    color: #00c4b6 !important;
+  }
+</style>
+<script>
+  new Valine({
+    el: '#vcomments',
+    appId: 'Eqy0fVUtsfkANpWSjIUYkIT2-gzGzoHsz',
+    appKey: 'i9tf7JI6tAXTlruivvk73mor',
+    avatar: '',
+    placeholder: '',
+    pageSize: '',
+    lang: 'zh-cn',
+    visitor: 'true' === 'true',
+    highlight: 'true' === 'true',
+    avatarForce: 'true' === 'true',
+  });
+</script>
+
+          </div>
         </div>
       </div>
     </div>
@@ -665,6 +870,36 @@
   // 代码高亮
   hljs.initHighlightingOnLoad();
 
+</script>
+    <div class="light-box" id="light_box"></div>
+<script>
+  let imgs = document.querySelectorAll('.post-body img');
+  let lightBox = document.querySelector('#light_box');
+  lightBox.addEventListener('mousedown', (e) => {
+    e.preventDefault()
+  })
+  lightBox.addEventListener('mousewheel', (e) => {
+    e.preventDefault()
+  })
+  let width = window.innerWidth * 0.8;
+  lightBox.onclick = () => {
+    let img = lightBox.querySelector('img');
+    lightBox.style = '';
+    img && img.remove();
+  }
+  imgs.forEach(item => {
+    item.onclick = function (e) {
+      let lightImg = document.createElement('img');
+      lightImg.src = this.src;
+      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
+      lightImg.style = `width: ${width}px; border: 1px solid #fff; border-radius: 2px;`;
+      lightImg.onclick = function () {
+        lightBox.style = '';
+        this.remove();
+      }
+      lightBox.append(lightImg);
+    }
+  })
 </script>
   </div>
 </body>
@@ -1622,6 +1857,5 @@ R安装特定的包&lt;/p&gt;
 
 
 <script src=" /media/js/cool.js"></script>
-
 
 </html>
