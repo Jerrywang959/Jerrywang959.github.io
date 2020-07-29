@@ -8,7 +8,7 @@
 <meta name="keywords" content="Jerry Blog">
 <meta name="description" content="分享知识与爱">
 <meta name="theme-color" content="#212529">
-<title>JY Blog</title>
+<title>Notion 找到最快的host | JY Blog</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1596025845105">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/pisces.css">
@@ -39,6 +39,8 @@
   })();
 </script>
 
+  <meta name="description" content="Notion 找到最快的host" />
+  <meta name="keywords" content="Notion,linux" />
 </head>
 
 <body>
@@ -177,10 +179,26 @@
   <div class="main-continer">
     
     <div
-      class="section-layout  pisces">
+      class="section-layout pisces ">
       <div class="section-layout-wrapper">
-        <div id="sidebarMeta" class="sidebar">
-    
+        
+
+<div class="sidebar">
+  
+    <div class="sidebar-box box-shadow-wrapper bg-color right-motion" id="sidebar">
+      
+        <div class="post-list-sidebar">
+          <div class="sidebar-title">
+            <span id="tocSideBar" class="sidebar-title-item sidebar-title-active">文章目录</span>
+            <span id="metaSideBar" class="sidebar-title-item">站点概览</span>
+          </div>
+        </div>
+      
+      <div class="sidebar-body pisces" id="sidebar_body">
+        
+          
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -222,148 +240,707 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#cloudflare-ip%E5%9C%B0%E5%9D%80">Cloudflare ip地址</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85fping">安装fping</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8fping%E7%AD%9B%E9%80%89">使用fping筛选</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE">参考文献</a></li>
+</ul>
+
+  </div>
 </div>
+
 <script>
-  let sidebarMeta = document.querySelector('#sidebarMeta');
-  let scheme = 'pisces';
-  let sidebarWrapper = document.querySelector('.sidebar-wrapper');
-  if (sidebarMeta && (scheme === 'pisces' || scheme === 'gemini')) {
-    document.addEventListener('scroll', function(e) {
-      if (document.scrollingElement.scrollTop > parseInt(sidebarMeta.style.marginTop) + 10) {
-        sidebarWrapper.classList.add('home-sidebar-fixed')
-      } else {
-        sidebarWrapper.classList.remove('home-sidebar-fixed')
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
       }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
     });
   }
-  </script>
-        <div class="section-box tag-line box-shadow-wrapper">
-          <section class="section tags-section posts-expand bg-color">
-            <div class="padding-wrapper">
-  <div class="tag-timeline-box">
-    <div class="tag-timeline-wrapper">
-      <div class="tag-timeline-title">
-        <h2>
-          WPS
-          <small>标签</small>
-        </h2>
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
+          
+        
       </div>
+    </div>
+  
+</div>
+<script>
+  const SIDEBAR_TITLE_ACTIVE = 'sidebar-title-active';
+  const SIDEBAR_BODY_ACTIVE = 'sidebar-body-active';
+  const SLIDE_UP_IN = 'slide-up-in';
+
+  let sidebar = document.querySelector('#sidebar'),
+  tocSideBar = document.querySelector('#tocSideBar'),
+  metaSideBar = document.querySelector('#metaSideBar'),
+  postToc = document.querySelector('#post_toc'),
+  postSiteMeta = document.querySelector('#post_side_meta'),
+  sidebarTitle = document.querySelector('.sidebar-title'),
+  sidebarBody = document.querySelector('#sidebar_body');
+
+  tocSideBar && tocSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  metaSideBar && metaSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  function toggleSidebar(e) {
+    let currentTitle = document.querySelector("."+SIDEBAR_TITLE_ACTIVE);
+    if (currentTitle == e.srcElement) {
+      return ;
+    }
+    let current, showElement, hideElement;
+    if (e.srcElement == metaSideBar) {
+      showElement = postSiteMeta;
+      hideElement = postToc;
+    } else if (e.srcElement == tocSideBar){
+      showElement = postToc;
+      hideElement = postSiteMeta;
+    }
+    currentTitle.classList.remove(SIDEBAR_TITLE_ACTIVE);
+    e.srcElement.classList.add(SIDEBAR_TITLE_ACTIVE);
+
+    window.Velocity(hideElement, 'stop');
+    window.Velocity(hideElement, 'transition.slideUpOut', {
+      display: 'none',
+      duration: 200,
+      complete: function () {
+        window.Velocity(showElement, 'transition.slideDownIn', {
+          duration: 200
+        });
+      }
+    })
+    hideElement.classList.remove(SIDEBAR_BODY_ACTIVE);
+    showElement.classList.add(SIDEBAR_BODY_ACTIVE);
+  }
+
+  postToc && postToc.addEventListener('transitionend', function() {
+    this.classList.remove(SLIDE_UP_IN);
+  });
+
+  if (sidebarBody) {
+    if (sidebarBody.classList.contains('pisces') || sidebarBody.classList.contains('gemini')) {
+      let hasFix = false;
+      let scrollEl = document.querySelector('.main-continer');
+      let limitTop = document.querySelector('#nav_ul').children.length * 42 + 162;
+      window.addEventListener('scroll', function(e) {
+        if (document.scrollingElement.scrollTop >= limitTop) {
+          if (!hasFix) {
+            sidebar.classList.add('sidebar-fixed');
+            hasFix = true;
+          }
+        } else {
+          if (hasFix) {
+            sidebar.classList.remove('sidebar-fixed');
+            hasFix = false;
+          }
+        }
+      });
+    }
+  }
+  
+</script>
+        <div class="section-box box-shadow-wrapper">
+          <div class="section bg-color post post-page">
+            <header class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="https://jerrywang.top/Notion 找到最快的host/">
+      Notion 找到最快的host
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span>发布于</span>
+      <span>2020-07-28</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show">分类于</span>
+      
       
+      <a href="https://jerrywang.top/WieDnQsRE/">
+        <span>Notion</span>
+      </a>、
       
       
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      <a href="https://jerrywang.top/Deepin下WPS公式不能正常显示/">
-        <div class="motion-warpper">
-          <div class="tag-post-node">
-            <h1>
-              06-22
-              <small>Deepin下WPS公式不能正常显示</small>
-            </h1>
-          </div>
-        </div>
+      <a href="https://jerrywang.top/lySFsoz6tV/">
+        <span>linux</span>
       </a>
       
       
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>27分钟</span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>4279<span class="pc-show">字数</span></span>
+    </span>
+    
+    
+    
+    <span id="/Notion 找到最快的host/" data-flag-title="Notion 找到最快的host" class="meta-item pc-show leancloud_visitors">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-eye"></i>
+      <span>浏览量：<span class="leancloud-visitors-count"></span></span>
+    </span>
+    
+  </div>
+</header>
+            <div class="post-body next-md-body" id="post_body">
+              <h1 id="cloudflare-ip地址">Cloudflare ip地址</h1>
+<pre><code class="language-Plain">108.162.236.1/24 联通 走美国
+172.64.32.1/24 移动 走香港
+104.16.160.1/24 电信 走美国洛杉矶
+172.64.0.0/24 电信 美国旧金山
+104.20.157.0/24 联通 走日本
+104.28.14.0/24 移动 走新加坡
+</code></pre>
+<h1 id="安装fping">安装fping</h1>
+<p>Debian系列</p>
+<pre><code class="language-Shell">sudo apt install fping
+</code></pre>
+<p>Mac</p>
+<pre><code class="language-Shell">brew install fping
+</code></pre>
+<h1 id="使用fping筛选">使用fping筛选</h1>
+<p>选择你的宽带, 进行fping</p>
+<pre><code class="language-Shell">fping -g 104.16.160.1/24 -c 20 --quiet
+</code></pre>
+<p><code>-g</code>后面加ip的位置, <code>-c</code>后面是发送的字节数量, <code>--quiet</code>意思是不显示每个ping的输出, 而再最后给出ping的统计结果<br>
+结果如下:</p>
+<pre><code class="language-Shell">104.16.160.1   : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/224/268
+104.16.160.2   : xmt/rcv/%loss = 20/14/30%, min/avg/max = 240/251/268
+104.16.160.3   : xmt/rcv/%loss = 20/12/40%, min/avg/max = 212/220/249
+104.16.160.4   : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/218/238
+104.16.160.5   : xmt/rcv/%loss = 20/12/40%, min/avg/max = 211/216/227
+104.16.160.6   : xmt/rcv/%loss = 20/13/35%, min/avg/max = 223/235/252
+104.16.160.7   : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/213/236
+104.16.160.8   : xmt/rcv/%loss = 20/16/20%, min/avg/max = 240/247/272
+104.16.160.9   : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/212/219
+104.16.160.10  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 202/207/220
+104.16.160.11  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 243/249/261
+104.16.160.12  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/220/227
+104.16.160.13  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 219/226/242
+104.16.160.14  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 221/243/250
+104.16.160.15  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 240/247/265
+104.16.160.16  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/221/255
+104.16.160.17  : xmt/rcv/%loss = 20/20/0%, min/avg/max = 197/214/245
+104.16.160.18  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 218/228/249
+104.16.160.19  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/223/260
+104.16.160.20  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/223/250
+104.16.160.21  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/222/236
+104.16.160.22  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 210/225/256
+104.16.160.23  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 215/219/231
+104.16.160.24  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/219/233
+104.16.160.25  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/214/220
+104.16.160.26  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/229/240
+104.16.160.27  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/214/230
+104.16.160.28  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/226/260
+104.16.160.29  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 222/231/246
+104.16.160.30  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/216/230
+104.16.160.31  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/219/236
+104.16.160.32  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 222/229/241
+104.16.160.33  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 226/231/239
+104.16.160.34  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 229/231/239
+104.16.160.35  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 236/244/256
+104.16.160.36  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/228/246
+104.16.160.37  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 209/215/230
+104.16.160.38  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 215/223/256
+104.16.160.39  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/251/267
+104.16.160.40  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/217/232
+104.16.160.41  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 209/217/229
+104.16.160.42  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 228/234/249
+104.16.160.43  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 211/216/229
+104.16.160.44  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 231/243/260
+104.16.160.45  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/221/230
+104.16.160.46  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 211/216/230
+104.16.160.47  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 215/220/231
+104.16.160.48  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/236
+104.16.160.49  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 229/237/277
+104.16.160.50  : xmt/rcv/%loss = 20/8/60%, min/avg/max = 206/211/221
+104.16.160.51  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 211/221/229
+104.16.160.52  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/220/240
+104.16.160.53  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/211/216
+104.16.160.54  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/210/216
+104.16.160.55  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/218/232
+104.16.160.56  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/214/226
+104.16.160.57  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/228/317
+104.16.160.58  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 226/236/314
+104.16.160.59  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/218/290
+104.16.160.60  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/220/249
+104.16.160.61  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 207/216/232
+104.16.160.62  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/223/263
+104.16.160.63  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/218/257
+104.16.160.64  : xmt/rcv/%loss = 20/17/15%, min/avg/max = 246/258/280
+104.16.160.65  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/218/252
+104.16.160.66  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/226/242
+104.16.160.67  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 198/214/236
+104.16.160.68  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 213/222/229
+104.16.160.69  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/227/241
+104.16.160.70  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 208/216/236
+104.16.160.71  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/224/301
+104.16.160.72  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/228/308
+104.16.160.73  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 199/212/287
+104.16.160.74  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 208/218/282
+104.16.160.75  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 236/246/305
+104.16.160.76  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/246/304
+104.16.160.77  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 215/225/263
+104.16.160.78  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 229/242/290
+104.16.160.79  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/224/239
+104.16.160.80  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 218/225/249
+104.16.160.81  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/243/260
+104.16.160.82  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/246/258
+104.16.160.83  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/215/226
+104.16.160.84  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/234/270
+104.16.160.85  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/218/253
+104.16.160.86  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/213/229
+104.16.160.87  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 199/210/230
+104.16.160.88  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/214/236
+104.16.160.89  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/217/229
+104.16.160.90  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 210/218/226
+104.16.160.91  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/219/226
+104.16.160.92  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/220/226
+104.16.160.93  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/210/215
+104.16.160.94  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 199/205/210
+104.16.160.95  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 239/244/267
+104.16.160.96  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/224/247
+104.16.160.97  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/217/226
+104.16.160.98  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 200/204/208
+104.16.160.99  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 204/209/215
+104.16.160.100 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 232/238/249
+104.16.160.101 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/210/216
+104.16.160.102 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/222/226
+104.16.160.103 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/212/232
+104.16.160.104 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 229/234/240
+104.16.160.105 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 262/266/280
+104.16.160.106 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 226/233/244
+104.16.160.107 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/228/236
+104.16.160.108 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/220/232
+104.16.160.109 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/217/230
+104.16.160.110 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 207/217/260
+104.16.160.111 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 220/225/240
+104.16.160.112 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 215/223/248
+104.16.160.113 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/219/230
+104.16.160.114 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/249/335
+104.16.160.115 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/214/229
+104.16.160.116 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/222/236
+104.16.160.117 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 242/248/260
+104.16.160.118 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 207/219/294
+104.16.160.119 : xmt/rcv/%loss = 20/18/10%, min/avg/max = 208/217/284
+104.16.160.120 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 211/227/232
+104.16.160.121 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/221/267
+104.16.160.122 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 206/213/219
+104.16.160.123 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/214/244
+104.16.160.124 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 215/222/239
+104.16.160.125 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 210/219/239
+104.16.160.126 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/225/266
+104.16.160.127 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 209/222/239
+104.16.160.128 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/222/241
+104.16.160.129 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/218/237
+104.16.160.130 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 199/214/229
+104.16.160.131 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 229/235/259
+104.16.160.132 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 238/246/260
+104.16.160.133 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/219/236
+104.16.160.134 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/215/219
+104.16.160.135 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/221/231
+104.16.160.136 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 208/223/236
+104.16.160.137 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 213/220/230
+104.16.160.138 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/225/246
+104.16.160.139 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/221/240
+104.16.160.140 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 219/226/232
+104.16.160.141 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 231/236/246
+104.16.160.142 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 218/225/240
+104.16.160.143 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 226/236/260
+104.16.160.144 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 208/213/240
+104.16.160.145 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 208/216/235
+104.16.160.146 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/223/246
+104.16.160.147 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/213/222
+104.16.160.148 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/230/256
+104.16.160.149 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/216/233
+104.16.160.150 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 208/215/233
+104.16.160.151 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/213/225
+104.16.160.152 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/213/219
+104.16.160.153 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 222/230/240
+104.16.160.154 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 223/230/239
+104.16.160.155 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/211/219
+104.16.160.156 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 226/234/240
+104.16.160.157 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 232/238/249
+104.16.160.158 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/214/226
+104.16.160.159 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 219/222/229
+104.16.160.160 : xmt/rcv/%loss = 20/18/10%, min/avg/max = 200/212/224
+104.16.160.161 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/211/218
+104.16.160.162 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/208/216
+104.16.160.163 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 205/209/216
+104.16.160.164 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/216/240
+104.16.160.165 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/217/226
+104.16.160.166 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 223/239/250
+104.16.160.167 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 219/225/246
+104.16.160.168 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 204/213/229
+104.16.160.169 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 206/211/230
+104.16.160.170 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/220/229
+104.16.160.171 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/213/226
+104.16.160.172 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 208/214/226
+104.16.160.173 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 220/225/239
+104.16.160.174 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 219/231/256
+104.16.160.175 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 213/216/219
+104.16.160.176 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/226/236
+104.16.160.177 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/216/226
+104.16.160.178 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 211/217/236
+104.16.160.179 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 208/215/222
+104.16.160.180 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 209/213/223
+104.16.160.181 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 219/223/229
+104.16.160.182 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/212/219
+104.16.160.183 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 210/218/239
+104.16.160.184 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/241/260
+104.16.160.185 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/208/229
+104.16.160.186 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/233/251
+104.16.160.187 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 215/222/248
+104.16.160.188 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/222/236
+104.16.160.189 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 207/213/226
+104.16.160.190 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/224/246
+104.16.160.191 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 212/219/246
+104.16.160.192 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/220/232
+104.16.160.193 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 215/223/239
+104.16.160.194 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/242/248
+104.16.160.195 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 210/217/238
+104.16.160.196 : xmt/rcv/%loss = 20/7/65%, min/avg/max = 215/221/247
+104.16.160.197 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/212/233
+104.16.160.198 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 208/215/229
+104.16.160.199 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 202/210/229
+104.16.160.200 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 205/211/226
+104.16.160.201 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/218/251
+104.16.160.202 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 210/219/237
+104.16.160.203 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 203/217/231
+104.16.160.204 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 210/223/236
+104.16.160.205 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 209/216/239
+104.16.160.206 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 212/220/239
+104.16.160.207 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/240/247
+104.16.160.208 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/216/221
+104.16.160.209 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 219/225/254
+104.16.160.210 : xmt/rcv/%loss = 20/20/0%, min/avg/max = 218/226/240
+104.16.160.211 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/214/229
+104.16.160.212 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 229/240/259
+104.16.160.213 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 269/276/299
+104.16.160.214 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 202/211/226
+104.16.160.215 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 229/233/242
+104.16.160.216 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 229/237/243
+104.16.160.217 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 220/226/236
+104.16.160.218 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/246/256
+104.16.160.219 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/229/236
+104.16.160.220 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 212/223/240
+104.16.160.221 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 205/208/211
+104.16.160.222 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/216/221
+104.16.160.223 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/214/219
+104.16.160.224 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 206/212/226
+104.16.160.225 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 217/225/230
+104.16.160.226 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 212/219/226
+104.16.160.227 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 212/217/222
+104.16.160.228 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/216/230
+104.16.160.229 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 215/218/232
+104.16.160.230 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/221/232
+104.16.160.231 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 202/210/233
+104.16.160.232 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/216/226
+104.16.160.233 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/211/219
+104.16.160.234 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 209/215/226
+104.16.160.235 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 204/208/223
+104.16.160.236 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/221/236
+104.16.160.237 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 206/213/221
+104.16.160.238 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 221/231/243
+104.16.160.239 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 246/254/264
+104.16.160.240 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 212/217/223
+104.16.160.241 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 211/220/231
+104.16.160.242 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 213/222/235
+104.16.160.243 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/217/222
+104.16.160.244 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 247/252/262
+104.16.160.245 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/239
+104.16.160.246 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/218/229
+104.16.160.247 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/214/219
+104.16.160.248 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 215/219/232
+104.16.160.249 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/246/276
+104.16.160.250 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 229/238/266
+104.16.160.251 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 232/239/246
+104.16.160.252 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 239/247/262
+104.16.160.253 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/239
+104.16.160.254 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/222/230
+</code></pre>
+<p>一眼就找到丢包为0%的ip或则丢包率最低的ip, 我这里是<code>104.16.160.17</code>, 然后选择方法改host为</p>
+<pre><code class="language-Plain">104.16.160.17 notion.so
+104.16.160.17 www.notion.so
+104.16.160.17 msgstore.www.notion.so
+</code></pre>
+<h1 id="参考文献">参考文献</h1>
+
+            </div>
+            <div class="post-footer">
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      Jerry Wang
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://jerrywang.top/Notion 找到最快的host/" title="Notion 找到最快的host">https://jerrywang.top/Notion 找到最快的host/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+  <div class="tags">
+    
+      <a href="https://jerrywang.top/WieDnQsRE/"># Notion</a>
+    
+      <a href="https://jerrywang.top/lySFsoz6tV/"># linux</a>
+    
+  </div>
+  <div class="nav">
+    <div class="nav-prev">
       
+        <i class="fa fa-chevron-left"></i>
+        <a class="nav-pc-next" title="Notion 找到最快的host(Linux)" href="https://jerrywang.top/Notion 找到最快的host(Linux)/">Notion 找到最快的host(Linux)</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="Notion 找到最快的host(Linux)" href="https://jerrywang.top/Notion 找到最快的host(Linux)/">上一篇</a>
       
+    </div>
+    <div class="nav-next">
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
+        <a class="nav-pc-next" title="Notion+Gridea搭建博客" href="https://jerrywang.top/Notion+Gridea搭建博客/">Notion+Gridea搭建博客</a>
+        <a class="nav-mobile-next" title="Notion+Gridea搭建博客" href="https://jerrywang.top/Notion+Gridea搭建博客/">下一篇</a>
+        <i class="fa fa-chevron-right"></i>
       
     </div>
   </div>
 </div>
-          </section>
+            
+  <script src="https://cdn.jsdelivr.net/npm/valine@1.4.4/dist/Valine.min.js"></script>
+<div id="vcomments" style="padding: 10px 0px 0px 0px"></div>
+
+<style>
+  .v .veditor {
+    min-height: 10rem;
+    background-image: url('https://upimage.alexhchu.com/2020/04/21/47eda59424daa.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-color: rgba(255, 255, 255, 0);
+    resize: none;
+  }
+
+  .v .vwrap {
+    border: 1px solid #000 !important;
+  }
+
+  .v .vbtn {
+    padding: .4rem 1.2rem !important;
+    border-color: #fff !important;
+    background-color: #49b1f5 !important;
+    color: #fff !important;
+    font-size: .7rem !important;
+  }
+
+  .v .vcards .vcard .vh .vmeta .vat {
+    padding: 0 .8rem !important;
+    border: 1px solid #00c4b6 !important;
+    border-radius: 5px !important;
+    color: #00c4b6 !important;
+  }
+</style>
+<script>
+  new Valine({
+    el: '#vcomments',
+    appId: 'Eqy0fVUtsfkANpWSjIUYkIT2-gzGzoHsz',
+    appKey: 'i9tf7JI6tAXTlruivvk73mor',
+    avatar: '',
+    placeholder: '',
+    pageSize: '',
+    lang: 'zh-cn',
+    visitor: 'true' === 'true',
+    highlight: 'true' === 'true',
+    avatarForce: 'true' === 'true',
+  });
+</script>
+
+          </div>
         </div>
       </div>
     </div>
@@ -533,6 +1110,36 @@
   // 代码高亮
   hljs.initHighlightingOnLoad();
 
+</script>
+    <div class="light-box" id="light_box"></div>
+<script>
+  let imgs = document.querySelectorAll('.post-body img');
+  let lightBox = document.querySelector('#light_box');
+  lightBox.addEventListener('mousedown', (e) => {
+    e.preventDefault()
+  })
+  lightBox.addEventListener('mousewheel', (e) => {
+    e.preventDefault()
+  })
+  let width = window.innerWidth * 0.8;
+  lightBox.onclick = () => {
+    let img = lightBox.querySelector('img');
+    lightBox.style = '';
+    img && img.remove();
+  }
+  imgs.forEach(item => {
+    item.onclick = function (e) {
+      let lightImg = document.createElement('img');
+      lightImg.src = this.src;
+      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
+      lightImg.style = `width: ${width}px; border: 1px solid #fff; border-radius: 2px;`;
+      lightImg.onclick = function () {
+        lightBox.style = '';
+        this.remove();
+      }
+      lightBox.append(lightImg);
+    }
+  })
 </script>
   </div>
 </body>
@@ -2055,6 +2662,5 @@ R安装特定的包&lt;/p&gt;
 
 
 <script src=" /media/js/cool.js"></script>
-
 
 </html>
