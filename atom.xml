@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jerrywang.top</id>
     <title>JY Blog</title>
-    <updated>2020-07-28T01:47:14.952Z</updated>
+    <updated>2020-07-29T02:38:20.050Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jerrywang.top"/>
     <link rel="self" href="https://jerrywang.top/atom.xml"/>
@@ -10,6 +10,292 @@
     <logo>https://jerrywang.top/images/avatar.png</logo>
     <icon>https://jerrywang.top/favicon.ico</icon>
     <rights>All rights reserved 2020, JY Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[Notion 找到最快的host(Linux)]]></title>
+        <id>https://jerrywang.top/Notion 找到最快的host(Linux)/</id>
+        <link href="https://jerrywang.top/Notion 找到最快的host(Linux)/">
+        </link>
+        <updated>2020-07-28T06:56:00.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="cloudflare-ip地址">Cloudflare ip地址</h1>
+<pre><code class="language-Plain">108.162.236.1/24 联通 走美国
+172.64.32.1/24 移动 走香港
+104.16.160.1/24 电信 走美国洛杉矶
+172.64.0.0/24 电信 美国旧金山
+104.20.157.0/24 联通 走日本
+104.28.14.0/24 移动 走新加坡
+</code></pre>
+<h1 id="安装fping">安装fping</h1>
+<p>Debian系列</p>
+<pre><code class="language-Shell">sudo apt install fping
+</code></pre>
+<p>选择你的宽带, 进行fping</p>
+<pre><code class="language-Shell">fping -g 104.16.160.1/24 -c 20 --quiet
+</code></pre>
+<p><code>-g</code>后面加ip的位置, <code>-c</code>后面是发送的字节数量, <code>--quiet</code>意思是不显示每个ping的输出, 而再最后给出ping的统计结果<br>
+结果如下:</p>
+<pre><code class="language-Shell">104.16.160.1   : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/224/268
+104.16.160.2   : xmt/rcv/%loss = 20/14/30%, min/avg/max = 240/251/268
+104.16.160.3   : xmt/rcv/%loss = 20/12/40%, min/avg/max = 212/220/249
+104.16.160.4   : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/218/238
+104.16.160.5   : xmt/rcv/%loss = 20/12/40%, min/avg/max = 211/216/227
+104.16.160.6   : xmt/rcv/%loss = 20/13/35%, min/avg/max = 223/235/252
+104.16.160.7   : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/213/236
+104.16.160.8   : xmt/rcv/%loss = 20/16/20%, min/avg/max = 240/247/272
+104.16.160.9   : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/212/219
+104.16.160.10  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 202/207/220
+104.16.160.11  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 243/249/261
+104.16.160.12  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/220/227
+104.16.160.13  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 219/226/242
+104.16.160.14  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 221/243/250
+104.16.160.15  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 240/247/265
+104.16.160.16  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/221/255
+104.16.160.17  : xmt/rcv/%loss = 20/20/0%, min/avg/max = 197/214/245
+104.16.160.18  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 218/228/249
+104.16.160.19  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/223/260
+104.16.160.20  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/223/250
+104.16.160.21  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/222/236
+104.16.160.22  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 210/225/256
+104.16.160.23  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 215/219/231
+104.16.160.24  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/219/233
+104.16.160.25  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/214/220
+104.16.160.26  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/229/240
+104.16.160.27  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/214/230
+104.16.160.28  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/226/260
+104.16.160.29  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 222/231/246
+104.16.160.30  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/216/230
+104.16.160.31  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/219/236
+104.16.160.32  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 222/229/241
+104.16.160.33  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 226/231/239
+104.16.160.34  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 229/231/239
+104.16.160.35  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 236/244/256
+104.16.160.36  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/228/246
+104.16.160.37  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 209/215/230
+104.16.160.38  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 215/223/256
+104.16.160.39  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/251/267
+104.16.160.40  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/217/232
+104.16.160.41  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 209/217/229
+104.16.160.42  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 228/234/249
+104.16.160.43  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 211/216/229
+104.16.160.44  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 231/243/260
+104.16.160.45  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/221/230
+104.16.160.46  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 211/216/230
+104.16.160.47  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 215/220/231
+104.16.160.48  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/236
+104.16.160.49  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 229/237/277
+104.16.160.50  : xmt/rcv/%loss = 20/8/60%, min/avg/max = 206/211/221
+104.16.160.51  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 211/221/229
+104.16.160.52  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/220/240
+104.16.160.53  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/211/216
+104.16.160.54  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/210/216
+104.16.160.55  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/218/232
+104.16.160.56  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/214/226
+104.16.160.57  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/228/317
+104.16.160.58  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 226/236/314
+104.16.160.59  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/218/290
+104.16.160.60  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/220/249
+104.16.160.61  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 207/216/232
+104.16.160.62  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/223/263
+104.16.160.63  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/218/257
+104.16.160.64  : xmt/rcv/%loss = 20/17/15%, min/avg/max = 246/258/280
+104.16.160.65  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/218/252
+104.16.160.66  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/226/242
+104.16.160.67  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 198/214/236
+104.16.160.68  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 213/222/229
+104.16.160.69  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/227/241
+104.16.160.70  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 208/216/236
+104.16.160.71  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/224/301
+104.16.160.72  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/228/308
+104.16.160.73  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 199/212/287
+104.16.160.74  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 208/218/282
+104.16.160.75  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 236/246/305
+104.16.160.76  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/246/304
+104.16.160.77  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 215/225/263
+104.16.160.78  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 229/242/290
+104.16.160.79  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/224/239
+104.16.160.80  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 218/225/249
+104.16.160.81  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/243/260
+104.16.160.82  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/246/258
+104.16.160.83  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/215/226
+104.16.160.84  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/234/270
+104.16.160.85  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/218/253
+104.16.160.86  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/213/229
+104.16.160.87  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 199/210/230
+104.16.160.88  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/214/236
+104.16.160.89  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/217/229
+104.16.160.90  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 210/218/226
+104.16.160.91  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/219/226
+104.16.160.92  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/220/226
+104.16.160.93  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/210/215
+104.16.160.94  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 199/205/210
+104.16.160.95  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 239/244/267
+104.16.160.96  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/224/247
+104.16.160.97  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/217/226
+104.16.160.98  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 200/204/208
+104.16.160.99  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 204/209/215
+104.16.160.100 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 232/238/249
+104.16.160.101 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/210/216
+104.16.160.102 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/222/226
+104.16.160.103 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/212/232
+104.16.160.104 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 229/234/240
+104.16.160.105 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 262/266/280
+104.16.160.106 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 226/233/244
+104.16.160.107 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/228/236
+104.16.160.108 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/220/232
+104.16.160.109 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/217/230
+104.16.160.110 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 207/217/260
+104.16.160.111 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 220/225/240
+104.16.160.112 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 215/223/248
+104.16.160.113 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/219/230
+104.16.160.114 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/249/335
+104.16.160.115 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/214/229
+104.16.160.116 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/222/236
+104.16.160.117 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 242/248/260
+104.16.160.118 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 207/219/294
+104.16.160.119 : xmt/rcv/%loss = 20/18/10%, min/avg/max = 208/217/284
+104.16.160.120 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 211/227/232
+104.16.160.121 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/221/267
+104.16.160.122 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 206/213/219
+104.16.160.123 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/214/244
+104.16.160.124 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 215/222/239
+104.16.160.125 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 210/219/239
+104.16.160.126 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/225/266
+104.16.160.127 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 209/222/239
+104.16.160.128 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/222/241
+104.16.160.129 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/218/237
+104.16.160.130 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 199/214/229
+104.16.160.131 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 229/235/259
+104.16.160.132 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 238/246/260
+104.16.160.133 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/219/236
+104.16.160.134 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/215/219
+104.16.160.135 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/221/231
+104.16.160.136 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 208/223/236
+104.16.160.137 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 213/220/230
+104.16.160.138 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/225/246
+104.16.160.139 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/221/240
+104.16.160.140 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 219/226/232
+104.16.160.141 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 231/236/246
+104.16.160.142 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 218/225/240
+104.16.160.143 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 226/236/260
+104.16.160.144 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 208/213/240
+104.16.160.145 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 208/216/235
+104.16.160.146 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/223/246
+104.16.160.147 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/213/222
+104.16.160.148 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/230/256
+104.16.160.149 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/216/233
+104.16.160.150 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 208/215/233
+104.16.160.151 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/213/225
+104.16.160.152 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/213/219
+104.16.160.153 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 222/230/240
+104.16.160.154 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 223/230/239
+104.16.160.155 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/211/219
+104.16.160.156 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 226/234/240
+104.16.160.157 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 232/238/249
+104.16.160.158 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/214/226
+104.16.160.159 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 219/222/229
+104.16.160.160 : xmt/rcv/%loss = 20/18/10%, min/avg/max = 200/212/224
+104.16.160.161 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/211/218
+104.16.160.162 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/208/216
+104.16.160.163 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 205/209/216
+104.16.160.164 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/216/240
+104.16.160.165 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/217/226
+104.16.160.166 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 223/239/250
+104.16.160.167 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 219/225/246
+104.16.160.168 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 204/213/229
+104.16.160.169 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 206/211/230
+104.16.160.170 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/220/229
+104.16.160.171 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/213/226
+104.16.160.172 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 208/214/226
+104.16.160.173 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 220/225/239
+104.16.160.174 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 219/231/256
+104.16.160.175 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 213/216/219
+104.16.160.176 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/226/236
+104.16.160.177 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/216/226
+104.16.160.178 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 211/217/236
+104.16.160.179 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 208/215/222
+104.16.160.180 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 209/213/223
+104.16.160.181 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 219/223/229
+104.16.160.182 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/212/219
+104.16.160.183 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 210/218/239
+104.16.160.184 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/241/260
+104.16.160.185 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/208/229
+104.16.160.186 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/233/251
+104.16.160.187 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 215/222/248
+104.16.160.188 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/222/236
+104.16.160.189 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 207/213/226
+104.16.160.190 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/224/246
+104.16.160.191 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 212/219/246
+104.16.160.192 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/220/232
+104.16.160.193 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 215/223/239
+104.16.160.194 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/242/248
+104.16.160.195 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 210/217/238
+104.16.160.196 : xmt/rcv/%loss = 20/7/65%, min/avg/max = 215/221/247
+104.16.160.197 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/212/233
+104.16.160.198 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 208/215/229
+104.16.160.199 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 202/210/229
+104.16.160.200 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 205/211/226
+104.16.160.201 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/218/251
+104.16.160.202 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 210/219/237
+104.16.160.203 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 203/217/231
+104.16.160.204 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 210/223/236
+104.16.160.205 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 209/216/239
+104.16.160.206 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 212/220/239
+104.16.160.207 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/240/247
+104.16.160.208 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/216/221
+104.16.160.209 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 219/225/254
+104.16.160.210 : xmt/rcv/%loss = 20/20/0%, min/avg/max = 218/226/240
+104.16.160.211 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/214/229
+104.16.160.212 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 229/240/259
+104.16.160.213 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 269/276/299
+104.16.160.214 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 202/211/226
+104.16.160.215 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 229/233/242
+104.16.160.216 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 229/237/243
+104.16.160.217 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 220/226/236
+104.16.160.218 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/246/256
+104.16.160.219 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/229/236
+104.16.160.220 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 212/223/240
+104.16.160.221 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 205/208/211
+104.16.160.222 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/216/221
+104.16.160.223 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/214/219
+104.16.160.224 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 206/212/226
+104.16.160.225 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 217/225/230
+104.16.160.226 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 212/219/226
+104.16.160.227 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 212/217/222
+104.16.160.228 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/216/230
+104.16.160.229 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 215/218/232
+104.16.160.230 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/221/232
+104.16.160.231 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 202/210/233
+104.16.160.232 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/216/226
+104.16.160.233 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/211/219
+104.16.160.234 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 209/215/226
+104.16.160.235 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 204/208/223
+104.16.160.236 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/221/236
+104.16.160.237 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 206/213/221
+104.16.160.238 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 221/231/243
+104.16.160.239 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 246/254/264
+104.16.160.240 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 212/217/223
+104.16.160.241 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 211/220/231
+104.16.160.242 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 213/222/235
+104.16.160.243 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/217/222
+104.16.160.244 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 247/252/262
+104.16.160.245 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/239
+104.16.160.246 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/218/229
+104.16.160.247 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/214/219
+104.16.160.248 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 215/219/232
+104.16.160.249 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/246/276
+104.16.160.250 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 229/238/266
+104.16.160.251 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 232/239/246
+104.16.160.252 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 239/247/262
+104.16.160.253 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/239
+104.16.160.254 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/222/230
+</code></pre>
+<p>一眼就找到丢包为0%的ip或则丢包率最低的ip, 我这里是<code>104.16.160.17</code>, 然后选择方法改host为</p>
+<pre><code class="language-Plain">104.16.160.17 notion.so
+104.16.160.17 www.notion.so
+104.16.160.17 msgstore.www.notion.so
+</code></pre>
+<h1 id="参考文献">参考文献</h1>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Notion+Gridea搭建博客]]></title>
         <id>https://jerrywang.top/Notion+Gridea搭建博客/</id>
@@ -370,83 +656,6 @@ Exec=deepin-teminal -x ~/Desktop/frpc
 Type=Application
 </code></pre>
 <p>总结起来我们不难发现，Exec就是相当于在命令行执行的的命令，只是不显示输出和终端罢了。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[本地搭建sharelatex协作服务器]]></title>
-        <id>https://jerrywang.top/本地搭建sharelatex协作服务器/</id>
-        <link href="https://jerrywang.top/本地搭建sharelatex协作服务器/">
-        </link>
-        <updated>2020-07-23T20:29:00.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="为什么要本地搭建sharelatex协作web应用">为什么要本地搭建sharelatex协作web应用</h1>
-<p>有一个网站，叫做overleaf，是一个非常好用的latex在线编辑网站，集协作、聊天、<strong>latex代码补全</strong>等多种功能为一体的latex写作网站，最重要的是，<strong>debug</strong>比较容易，出现小错误也会强制编译成功，非常适合新手。然而，这个网站的服务器在国外，网络连接不太稳定，科学上网也常常会出现连接中断的情况，很烦。一次偶然的情况下，我发现overleaf居然在github上开源了，而且还可以用docker一键本地部署，于是开始操作起来。</p>
-<h1 id="安装docker-ce">安装docker-ce</h1>
-<p>dokcer-ce是较新版本的docker，而且是社区版。我的使用的系统是的deepin15.11，也许由于某些问题（我太菜了），我无法正常使用mongo，因此我在使用VMware创建了一个ubuntu server 18.04，在此server上安装docker-ce。<br>
-<strong>卸载老版本</strong></p>
-<pre><code class="language-Plain">sudo apt-get remove docker docker-engine docker.io
-</code></pre>
-<p><strong>从apt源安装</strong></p>
-<pre><code class="language-Plain">sudo apt-get update
-sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository \
-   &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable&quot;
-sudo apt-get update
-sudo apt-get install docker-ce
-</code></pre>
-<p>安装好了之后，验证是否安装成功。</p>
-<pre><code class="language-Plain">sudo docker -v
-</code></pre>
-<p><img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586352347164.png" alt="" loading="lazy"><br>
-UTOOLS1586352347164.png<br>
-这表示安装成功，版本为19.03.8。因为我是在一个单独的虚拟机上跑docker，而且这个虚拟机只跑某一个服务，因此我没有设置docker用户组，直接用sudo权限运行docker。要想设置普通用户使用docker，参见<br>
-<a href="https://blog.csdn.net/u013948858/article/details/78429954">【Docker】非root用户加入docker用户组省去sudo （三）</a></p>
-<h1 id="安装docker-compose">安装docker-compose</h1>
-<p>这是一个协同多个docker容器的工具，而且可以更加容易的设置环境变量。<br>
-输入以下代码安装docker-compose 1.25.4（速度较慢）</p>
-<pre><code class="language-Plain">curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-</code></pre>
-<p>输入以下命令</p>
-<pre><code class="language-Plain">docker-compose -v           
-</code></pre>
-<p>出现以下信息则表示安装成功<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586352886310.png" alt="" loading="lazy"><br>
-UTOOLS1586352886310.png</p>
-<h1 id="pull-images">pull images</h1>
-<p>sharelatex官方的image是不包括完整的textlive的，需要自行安装完整版，这里我找到了其他开发者已经集成texlive-2019完整版的sharelatex，依次输入以下命令</p>
-<pre><code class="language-Plain">sudo docker pull mongo
-sudo docker pull redis
-sudo docker pull flodointhecloud/sharelatex-texlive2019
-</code></pre>
-<p>完整版texlive的镜像大约9G多，pull下载需要一段时间，国内速度太慢可以选择使用镜像站点，参见<a href="https://blog.csdn.net/whatday/article/details/86770609">docker 设置国内镜像源</a></p>
-<h1 id="下载docker-composeyml文件">下载docker-compose.yml文件</h1>
-<p>overleaf在github上提供了构建sharelatex的yml文件，下载即可<a href="https://raw.githubusercontent.com/overleaf/overleaf/master/docker-compose.yml">链接</a> （可能打不开，可以自定义域名解析，详见百度）<br>
-下载好后修改以下内容</p>
-<ol>
-<li>container_name改为flodointhecloud/sharelatex-texlive2019</li>
-</ol>
-<h1 id="运行sharelatex">运行sharelatex</h1>
-<p>进入docker-compose.yml所在的目录，输入以下命令</p>
-<pre><code class="language-Plain">sudo docker-compose up 
-</code></pre>
-<p>稍等片刻，就启动成功了。<br>
-VMware设置桥接网络，输入虚拟机的ip地址即可进入sharelatex的主页，我这里是http://192.168.1.8/<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586354080411.png" alt="" loading="lazy"><br>
-UTOOLS1586354080411.png<br>
-输入http://192.168.1.8/launchpad设置第一个管理员，设置完成后输入你的设置信息即可登录成功。<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586354054553.png" alt="" loading="lazy"><br>
-UTOOLS1586354054553.png</p>
-<h1 id="更多个性化设置">更多个性化设置</h1>
-<ol>
-<li>设置环境变量：详见<a href="https://github.com/overleaf/overleaf/wiki">overleaf官方wiki</a></li>
-<li>通过内网穿透将其放在公网访问</li>
-</ol>
-<h1 id="参考文献">参考文献</h1>
-<p><a href="https://www.jianshu.com/p/83483c35bfcd">ubuntu 18.04 安装docker ce</a><br>
-<a href="https://github.com/docker/compose/releases">docker-compose releases页面</a></p>
 ]]></content>
     </entry>
 </feed>
