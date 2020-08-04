@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jerrywang.top</id>
     <title>JY Blog</title>
-    <updated>2020-07-29T12:31:16.999Z</updated>
+    <updated>2020-08-04T02:25:29.100Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jerrywang.top"/>
     <link rel="self" href="https://jerrywang.top/atom.xml"/>
@@ -10,6 +10,22 @@
     <logo>https://jerrywang.top/images/avatar.png</logo>
     <icon>https://jerrywang.top/favicon.ico</icon>
     <rights>All rights reserved 2020, JY Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[安装Linuxfirmware]]></title>
+        <id>https://jerrywang.top/安装Linuxfirmware/</id>
+        <link href="https://jerrywang.top/安装Linuxfirmware/">
+        </link>
+        <updated>2020-08-01T05:26:00.000Z</updated>
+        <content type="html"><![CDATA[<p>核心命令</p>
+<pre><code class="language-Shell">1、tar -xavf linux-firmware-20200721.tar.xz         #解压
+2、cd linux-firmware-20200721                             #进入目录
+3、make check                                                                  #检查固件（小声BB，一检查就是一堆东西no exist）
+4、sudo make install                                                      #安装
+5、sudo update-initramfs -uk all                              #安装完毕更新内核启动映像
+</code></pre>
+<h1 id="参考文献">参考文献</h1>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Notion 找到最快的host(Linux)]]></title>
         <id>https://jerrywang.top/Notion 找到最快的host(Linux)/</id>
@@ -583,6 +599,9 @@
 104.16.160.17 www.notion.so
 104.16.160.17 msgstore.www.notion.so
 </code></pre>
+<h1 id="to-do">TO-DO</h1>
+<p>写一个自动化脚本, 用Python, 这应该不难的<br>
+看起来不是所有的ip都可以行得通, 需要进行预测试</p>
 <h1 id="参考文献">参考文献</h1>
 ]]></content>
     </entry>
@@ -821,79 +840,6 @@ UTOOLS1586523375179.png<br>
 <h2 id="博主是谁">👨‍💻 博主是谁</h2>
 <h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
 <h2 id="联系我呀">📬 联系我呀</h2>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[使用google colab实现JuliaGPU加速]]></title>
-        <id>https://jerrywang.top/使用google colab实现JuliaGPU加速/</id>
-        <link href="https://jerrywang.top/使用google colab实现JuliaGPU加速/">
-        </link>
-        <updated>2020-07-23T20:34:16.000Z</updated>
-        <content type="html"><![CDATA[<p>这篇文章的主要内容来自于 https://discourse.julialang.org/t/julia-on-google-colab-free-gpu-accelerated-shareable-notebooks/15319<br>
-本文不过是进行了翻译、整理和一些修改，希望对大家有所帮助。无法正常访问谷歌的可以忽略此帖子。</p>
-<ol>
-<li>在本地创建 test.txt 文件，写入以下内容</li>
-</ol>
-<pre><code class="language-Plain">{
-  &quot;nbformat&quot;: 4,
-  &quot;nbformat_minor&quot;: 0,
-  &quot;metadata&quot;: {
-    &quot;colab&quot;: {
-      &quot;name&quot;: &quot;Julia on Colab.ipynb&quot;,
-      &quot;version&quot;: &quot;0.3.2&quot;,
-      &quot;provenance&quot;: []
-    },
-    &quot;kernelspec&quot;: {
-      &quot;name&quot;: &quot;julia-1.4&quot;,
-      &quot;display_name&quot;: &quot;Julia 1.4&quot;
-    },
-    &quot;accelerator&quot;: &quot;GPU&quot;
-  },
-  &quot;cells&quot;: [
-    {
-      &quot;metadata&quot;: {
-        &quot;id&quot;: &quot;oMSuTc3pDlHv&quot;,
-        &quot;colab_type&quot;: &quot;code&quot;,
-        &quot;colab&quot;: {}
-      },
-      &quot;cell_type&quot;: &quot;code&quot;,
-      &quot;source&quot;: [
-        &quot;&quot;
-      ],
-      &quot;execution_count&quot;: 0,
-      &quot;outputs&quot;: []
-    }
-  ]
-}
-</code></pre>
-<ol>
-<li>把test.txt文件后缀改为 .ipynb</li>
-<li>打开google colab 上传 test.ipynb<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586186574800.png" alt="" loading="lazy"><br>
-UTOOLS1586186574800.png</li>
-<li>打开后左下角会出现这样的提示，这意味着虽然设置了julia kernel 但是尚未安装julia，还用的是 python kernel<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586186584386.png" alt="" loading="lazy"><br>
-UTOOLS1586186584386.png</li>
-<li>与原作者当时发帖不同的是，现在的google colab已经预安装好了CUDA 10.1，因此直接安装julia就可以了。在一个代码行中输入以下命令。</li>
-</ol>
-<pre><code class="language-Plain">!curl -sSL &quot;https://julialang-s3.julialang.org/bin/linux/x64/1.4/julia-1.4.0-linux-x86_64.tar.gz&quot; -o julia.tar.gz
-!tar -xzf julia.tar.gz -C /usr --strip-components 1
-!rm -rf julia.tar.gz*
-!julia -e 'using Pkg; pkg&quot; up; add IJulia ;  precompile&quot;'
-</code></pre>
-<p>下载和安装非常快，几分钟就ok了。<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586186600403.png" alt="" loading="lazy"></p>
-<ol>
-<li>刷新页面，就可以正常使用julia和GPU了</li>
-<li>测试一下：安装Currays和BenchmarkTools<br>
-运行前会自动下载相关的依赖项，速度很快<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586186621204.png" alt="" loading="lazy"><br>
-UTOOLS1586186621204.png<br>
-可以看到，GPU加速成功<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586186629314.png" alt="" loading="lazy"><br>
-UTOOLS1586186629314.png<br>
-随着julia版本的更新，可以自行调换kernel的name和下载julia的链接</li>
-</ol>
 ]]></content>
     </entry>
 </feed>

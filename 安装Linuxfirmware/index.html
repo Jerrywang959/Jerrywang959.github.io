@@ -8,7 +8,7 @@
 <meta name="keywords" content="Jerry Blog">
 <meta name="description" content="分享知识与爱">
 <meta name="theme-color" content="#212529">
-<title>Adguardhome自建dns服务器 | JY Blog</title>
+<title>安装Linuxfirmware | JY Blog</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1596507918596">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/pisces.css">
@@ -39,8 +39,8 @@
   })();
 </script>
 
-  <meta name="description" content="Adguardhome自建dns服务器" />
-  <meta name="keywords" content="AdGuard Home,DNS" />
+  <meta name="description" content="安装Linuxfirmware" />
+  <meta name="keywords" content="linux" />
 </head>
 
 <body>
@@ -246,12 +246,6 @@
   <div class="toc-wrapper auto-number auto"
     id="toc_wrapper">
     <ul class="markdownIt-TOC">
-<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%87%AA%E5%BB%BAdns%E6%9C%8D%E5%8A%A1%E5%99%A8">为什么要自建dns服务器</a></li>
-<li><a href="#%E5%AE%89%E8%A3%85adguard-home">安装Adguard Home</a></li>
-<li><a href="#%E5%88%9D%E5%A7%8B%E5%8C%96adguard-home">初始化Adguard Home</a></li>
-<li><a href="#%E9%85%8D%E7%BD%AEadguard-home">配置Adguard Home</a></li>
-<li><a href="#%E8%87%AA%E5%AE%9A%E4%B9%89dns%E8%A7%84%E5%88%99">自定义DNS规则</a></li>
-<li><a href="#%E6%9B%B4%E5%A4%9A%E9%85%8D%E7%BD%AE">更多配置</a></li>
 <li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE">参考文献</a></li>
 </ul>
 
@@ -518,8 +512,8 @@
           <div class="section bg-color post post-page">
             <header class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="https://jerrywang.top/Adguardhome自建dns服务器/">
-      Adguardhome自建dns服务器
+    <a class="post-title-link" href="https://jerrywang.top/安装Linuxfirmware/">
+      安装Linuxfirmware
     </a>
   </h1>
   <div class="post-meta">
@@ -527,7 +521,7 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span>发布于</span>
-      <span>2020-07-24</span>
+      <span>2020-08-01</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
@@ -536,14 +530,8 @@
       <span class="pc-show">分类于</span>
       
       
-      <a href="https://jerrywang.top/qn-IA5Cyg/">
-        <span>AdGuard Home</span>
-      </a>、
-      
-      
-      
-      <a href="https://jerrywang.top/-gaN1SffA/">
-        <span>DNS</span>
+      <a href="https://jerrywang.top/lySFsoz6tV/">
+        <span>linux</span>
       </a>
       
       
@@ -552,17 +540,17 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>5分钟</span>
+      <span>1分钟</span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>1279<span class="pc-show">字数</span></span>
+      <span>72<span class="pc-show">字数</span></span>
     </span>
     
     
     
-    <span id="/Adguardhome自建dns服务器/" data-flag-title="Adguardhome自建dns服务器" class="meta-item pc-show leancloud_visitors">
+    <span id="/安装Linuxfirmware/" data-flag-title="安装Linuxfirmware" class="meta-item pc-show leancloud_visitors">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-eye"></i>
       <span>浏览量：<span class="leancloud-visitors-count"></span></span>
@@ -571,78 +559,14 @@
   </div>
 </header>
             <div class="post-body next-md-body" id="post_body">
-              <h1 id="为什么要自建dns服务器">为什么要自建dns服务器</h1>
-<p>作为一个时常访问github的公民，却因为一些你懂得的原因，无法访问raw.githubusercontent.com这一域名，有的时候连github都无法访问，比较苦恼。刚好手里有一台闲置的学生云服务器，于是便有了自建dns服务的想法。<br>
-作为一个编程小白，最简单的方法便是用docker容器部署应用了，经过一段时间的寻找，终于找到了<a href="https://github.com/AdguardTeam/AdGuardHome">AdGuard Home</a>这一在github开源的免费应用，它不仅可以一键搭建自己的dns服务器，还可以自定义dns规则，设置广告过滤，于是，折腾之旅开始。</p>
-<h1 id="安装adguard-home">安装Adguard Home</h1>
-<p>我用的是Debian 9 x64系统，在腾讯云上，首先安装依赖项</p>
-<pre><code class="language-Plain">apt-get install sudo nano bind9-host
+              <p>核心命令</p>
+<pre><code class="language-Shell">1、tar -xavf linux-firmware-20200721.tar.xz         #解压
+2、cd linux-firmware-20200721                             #进入目录
+3、make check                                                                  #检查固件（小声BB，一检查就是一堆东西no exist）
+4、sudo make install                                                      #安装
+5、sudo update-initramfs -uk all                              #安装完毕更新内核启动映像
 </code></pre>
-<p>下载 Adguard Home</p>
-<pre><code class="language-Plain">wget https://static.adguard.com/adguardhome/release/AdGuardHome_linux_amd64.tar.gz
-tar xvf AdGuardHome_linux_amd64.tar.gz
-cd AdGuardHome
-</code></pre>
-<p>执行安装命令</p>
-<pre><code class="language-Plain">sudo ./AdGuardHome -s install
-</code></pre>
-<p>运行AdGuardHome</p>
-<pre><code class="language-Plain">./AdGuardHome -s start
-</code></pre>
-<p>验证是否运行成功</p>
-<pre><code class="language-Plain">host doubleclick.net 127.0.0.1
-</code></pre>
-<p>若出现以下信息，则运行成功</p>
-<pre><code class="language-Plain">Using domain server:
-Name: 127.0.0.1
-Address: 127.0.0.1#53
-Aliases:
-
-Host doubleclick.net not found: 3(NXDOMAIN)
-</code></pre>
-<h1 id="初始化adguard-home">初始化Adguard Home</h1>
-<p>在本地浏览器中打开 http://你的服务器ip:3000 （记得开端口） 进行初始化配置，这一初始化配置主要是设置用户名密码以及设置dns服务器的运行地址（选择127.0.0.1就可以了）和端口。这里端口包括两个，一个是管理界面的端口，默认设置为80或者设置其他都可以，另外一个是dns服务器运行的端口，这个最好设置为53，因为很多设备都只支持53端口的dns解析。</p>
-<h1 id="配置adguard-home">配置Adguard Home</h1>
-<p>本地浏览器中打开http://你的服务器ip:你设置的管理面板端口主界面应该是这样的，正式使用之前，需要完成以下设置<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586523754731.png" alt="" loading="lazy"><br>
-UTOOLS1586523754731.png<br>
-<strong>设置上游dns服务器</strong><br>
-进入界面后，点击设置的dns设置，往下可以找到上游dns服务器的设置，默认的dns服务器在国外，连接不太顺畅，一般选择在国内的纯净dns或者大型dns服务商（污染问题可以通过自定义dns解决），我选的是114.114.114.114和119.29.29.29，并勾选通过同时查询所有上流服务器以使用并行查询加速解析。<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586522362197.png" alt="" loading="lazy"><br>
-UTOOLS1586522362197.png<br>
-然后检测dns并应用<br>
-<strong>设置白名单</strong><br>
-百度ip查询自己的ip地址，并写入。考虑到家庭网络的动态ip可以在后面写入 /8 或者 /16。若自己有多个公网ip，可以添加多个允许的ip，还以加上127.0.0.1(本地地址)，让云服务器访问自己的dns服务<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586522556881.png" alt="" loading="lazy"><br>
-<strong>过滤广告</strong><br>
-在常规设置中勾选全部项目<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586522666008.png" alt="" loading="lazy"><br>
-UTOOLS1586522666008.png<br>
-打开过滤器的封锁清单，勾选已经有的地址，并添加以下地址（这一过程会使网页卡顿，耐心等）。但这些规则并不是很适用于国内的广告商，我又加入了以下清单</p>
-<ol>
-<li>https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt</li>
-<li>https://easylist-downloads.adblockplus.org/easylistchina.txt</li>
-<li>https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/ABP-FX.txt</li>
-<li>https://gitee.com/privacy-protection-tools/anti-ad/raw/master/easylist.txt<br>
-更多广告过滤规则可见<a href="https://juejin.im/post/5d91666ef265da5b7326d71d">用上这个神器后，广告从此去无忧！(全平台免费支持，无需安装任何客户端软件)</a><br>
-设置完成后记得开UDP的53端口（而不是TCP），DNS服务器方可正常使用。因为过滤了很多广告，大大增加了网页浏览的体验。</li>
-</ol>
-<h1 id="自定义dns规则">自定义DNS规则</h1>
-<p>这一功能的存在是我一直使用AdGuard Home的原因，这一功能在官方文档也没有明确的说明，鄙人摸索了一段时间才找到。<br>
-打开过滤器中的dns重写，即为自定义dns规则。我们以github.io为例。<br>
-使用在服务器中输入</p>
-<pre><code class="language-Plain">host github.io
-</code></pre>
-<p>会出现4个ip地址，分别为 185.199.108.153、 185.199.109.153、 185.199.110.153、 185.199.111.153，这表面github有使用CDN加速服务，有的CDN ip是被屏蔽的，而有的没有。经过不停的测试，只有185.199.109.153这一ip没有被屏蔽，而host解析出来的的最优先域名并不一定是185.199.109.153，这就是为什么有时github.io打不开，但是多刷新几次就打开了。这里我们主动设置github.io解析到185.199.109.153，就可以顺畅地访问了。<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586523375179.png" alt="" loading="lazy"><br>
-UTOOLS1586523375179.png<br>
-如果无法获得可供访问的ip，可以在此地址搜索域名的绕过CDN真实ip <a href="https://www.ipaddress.com/">IP Address.com</a>。若此ip也被屏蔽，则没有办法访问了，比如谷歌。</p>
-<h1 id="更多配置">更多配置</h1>
-<p>Adguard home用户界面已经设置的很人性化了，基本上不需要看文档，很多内容摸索界面就摸索出来了，若有需要，请参看<a href="https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration">AdGuard Home - Configuration</a></p>
 <h1 id="参考文献">参考文献</h1>
-<ol>
-<li><a href="https://github.com/AdguardTeam/AdGuardHome/wiki/VPS">Adguard home 官方wiki：在VPSV上搭建Adguard home</a></li>
-</ol>
 
             </div>
             <div class="post-footer">
@@ -653,7 +577,7 @@ UTOOLS1586523375179.png<br>
     </li>
     <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://jerrywang.top/Adguardhome自建dns服务器/" title="Adguardhome自建dns服务器">https://jerrywang.top/Adguardhome自建dns服务器/</a>
+      <a href="https://jerrywang.top/安装Linuxfirmware/" title="安装Linuxfirmware">https://jerrywang.top/安装Linuxfirmware/</a>
     </li>
     <li class="post-copyright-license">
       <strong>版权声明： </strong>
@@ -662,23 +586,17 @@ UTOOLS1586523375179.png<br>
   </ul>
   <div class="tags">
     
-      <a href="https://jerrywang.top/qn-IA5Cyg/"># AdGuard Home</a>
-    
-      <a href="https://jerrywang.top/-gaN1SffA/"># DNS</a>
+      <a href="https://jerrywang.top/lySFsoz6tV/"># linux</a>
     
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="deepin实现远程桌面控制" href="https://jerrywang.top/deepin实现远程桌面控制/">deepin实现远程桌面控制</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="deepin实现远程桌面控制" href="https://jerrywang.top/deepin实现远程桌面控制/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="about" href="https://jerrywang.top/about/">about</a>
-        <a class="nav-mobile-next" title="about" href="https://jerrywang.top/about/">下一篇</a>
+        <a class="nav-pc-next" title="Notion 找到最快的host(Linux)" href="https://jerrywang.top/Notion 找到最快的host(Linux)/">Notion 找到最快的host(Linux)</a>
+        <a class="nav-mobile-next" title="Notion 找到最快的host(Linux)" href="https://jerrywang.top/Notion 找到最快的host(Linux)/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
