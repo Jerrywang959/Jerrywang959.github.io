@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jerrywang.top</id>
     <title>JY Blog</title>
-    <updated>2020-08-05T07:40:29.800Z</updated>
+    <updated>2020-08-08T14:23:18.619Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jerrywang.top"/>
     <link rel="self" href="https://jerrywang.top/atom.xml"/>
@@ -10,6 +10,51 @@
     <logo>https://jerrywang.top/images/avatar.png</logo>
     <icon>https://jerrywang.top/favicon.ico</icon>
     <rights>All rights reserved 2020, JY Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[Deb解包修改并再打包]]></title>
+        <id>https://jerrywang.top/Deb解包修改并再打包/</id>
+        <link href="https://jerrywang.top/Deb解包修改并再打包/">
+        </link>
+        <updated>2020-08-07T19:10:00.000Z</updated>
+        <content type="html"><![CDATA[<p>核心命令</p>
+<p>解压出包中的文件到extract目录下</p>
+<pre><code class="language-Shell">dpkg -X xxxx.deb ./extract/
+</code></pre>
+<p>解压出包的控制信息到extract/DEBIAN/下</p>
+<pre><code class="language-Shell">dpkg -e xxxx.deb ./extract/DEBIAN/
+</code></pre>
+<p>对修改后的内容重新进行打包生成deb包</p>
+<pre><code class="language-Shell">dpkg-deb -b ./extract/ ./
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Deepin使用加密DNS(DOT, DOH)]]></title>
+        <id>https://jerrywang.top/Deepin使用加密DNS(DOT, DOH)/</id>
+        <link href="https://jerrywang.top/Deepin使用加密DNS(DOT, DOH)/">
+        </link>
+        <updated>2020-08-06T06:22:00.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Notion图床工具需求]]></title>
+        <id>https://jerrywang.top/Notion图床工具需求/</id>
+        <link href="https://jerrywang.top/Notion图床工具需求/">
+        </link>
+        <updated>2020-08-05T22:54:00.000Z</updated>
+        <content type="html"><![CDATA[<p>建议集成到现有的工具中，如utools, picgo等其他工具，而不是做成一个单独的软件。可能用js做会好一点，但我对github上的Notion js轮子的功能不太了解</p>
+<h1 id="配置需求">配置需求</h1>
+<ol>
+<li>个人的token_v2，这个不是永久的，一旦手动退出登录就会失效。但只要不手动推出登录就不会失效。</li>
+<li>作为图床的page的url，需要设置页面为公开可读</li>
+</ol>
+<h1 id="操作步骤">操作步骤</h1>
+<ol>
+<li>复制图片到粘贴板，用token_v2模拟登录，上传图片到上面设置的公开图床page，并获取图片的亚马逊云地址，如</li>
+<li>转化为无token url。在上面的url中， <code>Untitled.png</code> 后面都去掉。然后把 <code>/</code> 替换为 <code>%2F</code>, <code>:</code> 替换为 <code>%3A</code> 。然后再整体的url前面加上 <a href="https://www.notion.so/image/"><code>https://www.notion.so/image/</code></a> 。例如，一个转化后的url为</li>
+<li>提供多种格式(markdown, html, url)到粘贴板</li>
+</ol>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[安装Linuxfirmware]]></title>
         <id>https://jerrywang.top/安装Linuxfirmware/</id>
@@ -27,578 +72,47 @@
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Notion 找到最快的host(Linux)]]></title>
-        <id>https://jerrywang.top/Notion 找到最快的host(Linux)/</id>
-        <link href="https://jerrywang.top/Notion 找到最快的host(Linux)/">
-        </link>
-        <updated>2020-07-28T06:56:00.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="cloudflare-ip地址">Cloudflare ip地址</h1>
-<pre><code class="language-Plain">108.162.236.1/24 联通 走美国
-172.64.32.1/24 移动 走香港
-104.16.160.1/24 电信 走美国洛杉矶
-172.64.0.0/24 电信 美国旧金山
-104.20.157.0/24 联通 走日本
-104.28.14.0/24 移动 走新加坡
-</code></pre>
-<h1 id="安装fping">安装fping</h1>
-<p>Debian系列</p>
-<pre><code class="language-Shell">sudo apt install fping
-</code></pre>
-<p>选择你的宽带, 进行fping</p>
-<pre><code class="language-Shell">fping -g 104.16.160.1/24 -c 20 --quiet
-</code></pre>
-<p><code>-g</code>后面加ip的位置, <code>-c</code>后面是发送的字节数量, <code>--quiet</code>意思是不显示每个ping的输出, 而再最后给出ping的统计结果<br>
-结果如下:</p>
-<pre><code class="language-Shell">104.16.160.1   : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/224/268
-104.16.160.2   : xmt/rcv/%loss = 20/14/30%, min/avg/max = 240/251/268
-104.16.160.3   : xmt/rcv/%loss = 20/12/40%, min/avg/max = 212/220/249
-104.16.160.4   : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/218/238
-104.16.160.5   : xmt/rcv/%loss = 20/12/40%, min/avg/max = 211/216/227
-104.16.160.6   : xmt/rcv/%loss = 20/13/35%, min/avg/max = 223/235/252
-104.16.160.7   : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/213/236
-104.16.160.8   : xmt/rcv/%loss = 20/16/20%, min/avg/max = 240/247/272
-104.16.160.9   : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/212/219
-104.16.160.10  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 202/207/220
-104.16.160.11  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 243/249/261
-104.16.160.12  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/220/227
-104.16.160.13  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 219/226/242
-104.16.160.14  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 221/243/250
-104.16.160.15  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 240/247/265
-104.16.160.16  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/221/255
-104.16.160.17  : xmt/rcv/%loss = 20/20/0%, min/avg/max = 197/214/245
-104.16.160.18  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 218/228/249
-104.16.160.19  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/223/260
-104.16.160.20  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/223/250
-104.16.160.21  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/222/236
-104.16.160.22  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 210/225/256
-104.16.160.23  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 215/219/231
-104.16.160.24  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/219/233
-104.16.160.25  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/214/220
-104.16.160.26  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/229/240
-104.16.160.27  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/214/230
-104.16.160.28  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/226/260
-104.16.160.29  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 222/231/246
-104.16.160.30  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/216/230
-104.16.160.31  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/219/236
-104.16.160.32  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 222/229/241
-104.16.160.33  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 226/231/239
-104.16.160.34  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 229/231/239
-104.16.160.35  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 236/244/256
-104.16.160.36  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/228/246
-104.16.160.37  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 209/215/230
-104.16.160.38  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 215/223/256
-104.16.160.39  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/251/267
-104.16.160.40  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/217/232
-104.16.160.41  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 209/217/229
-104.16.160.42  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 228/234/249
-104.16.160.43  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 211/216/229
-104.16.160.44  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 231/243/260
-104.16.160.45  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/221/230
-104.16.160.46  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 211/216/230
-104.16.160.47  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 215/220/231
-104.16.160.48  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/236
-104.16.160.49  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 229/237/277
-104.16.160.50  : xmt/rcv/%loss = 20/8/60%, min/avg/max = 206/211/221
-104.16.160.51  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 211/221/229
-104.16.160.52  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/220/240
-104.16.160.53  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/211/216
-104.16.160.54  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/210/216
-104.16.160.55  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/218/232
-104.16.160.56  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/214/226
-104.16.160.57  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/228/317
-104.16.160.58  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 226/236/314
-104.16.160.59  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/218/290
-104.16.160.60  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/220/249
-104.16.160.61  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 207/216/232
-104.16.160.62  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/223/263
-104.16.160.63  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/218/257
-104.16.160.64  : xmt/rcv/%loss = 20/17/15%, min/avg/max = 246/258/280
-104.16.160.65  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/218/252
-104.16.160.66  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/226/242
-104.16.160.67  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 198/214/236
-104.16.160.68  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 213/222/229
-104.16.160.69  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/227/241
-104.16.160.70  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 208/216/236
-104.16.160.71  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/224/301
-104.16.160.72  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/228/308
-104.16.160.73  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 199/212/287
-104.16.160.74  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 208/218/282
-104.16.160.75  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 236/246/305
-104.16.160.76  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/246/304
-104.16.160.77  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 215/225/263
-104.16.160.78  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 229/242/290
-104.16.160.79  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/224/239
-104.16.160.80  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 218/225/249
-104.16.160.81  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/243/260
-104.16.160.82  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/246/258
-104.16.160.83  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/215/226
-104.16.160.84  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/234/270
-104.16.160.85  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/218/253
-104.16.160.86  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/213/229
-104.16.160.87  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 199/210/230
-104.16.160.88  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/214/236
-104.16.160.89  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/217/229
-104.16.160.90  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 210/218/226
-104.16.160.91  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/219/226
-104.16.160.92  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/220/226
-104.16.160.93  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/210/215
-104.16.160.94  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 199/205/210
-104.16.160.95  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 239/244/267
-104.16.160.96  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/224/247
-104.16.160.97  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/217/226
-104.16.160.98  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 200/204/208
-104.16.160.99  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 204/209/215
-104.16.160.100 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 232/238/249
-104.16.160.101 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/210/216
-104.16.160.102 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/222/226
-104.16.160.103 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/212/232
-104.16.160.104 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 229/234/240
-104.16.160.105 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 262/266/280
-104.16.160.106 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 226/233/244
-104.16.160.107 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/228/236
-104.16.160.108 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/220/232
-104.16.160.109 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/217/230
-104.16.160.110 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 207/217/260
-104.16.160.111 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 220/225/240
-104.16.160.112 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 215/223/248
-104.16.160.113 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/219/230
-104.16.160.114 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/249/335
-104.16.160.115 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/214/229
-104.16.160.116 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/222/236
-104.16.160.117 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 242/248/260
-104.16.160.118 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 207/219/294
-104.16.160.119 : xmt/rcv/%loss = 20/18/10%, min/avg/max = 208/217/284
-104.16.160.120 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 211/227/232
-104.16.160.121 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/221/267
-104.16.160.122 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 206/213/219
-104.16.160.123 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/214/244
-104.16.160.124 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 215/222/239
-104.16.160.125 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 210/219/239
-104.16.160.126 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/225/266
-104.16.160.127 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 209/222/239
-104.16.160.128 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/222/241
-104.16.160.129 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/218/237
-104.16.160.130 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 199/214/229
-104.16.160.131 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 229/235/259
-104.16.160.132 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 238/246/260
-104.16.160.133 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/219/236
-104.16.160.134 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/215/219
-104.16.160.135 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/221/231
-104.16.160.136 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 208/223/236
-104.16.160.137 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 213/220/230
-104.16.160.138 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/225/246
-104.16.160.139 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/221/240
-104.16.160.140 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 219/226/232
-104.16.160.141 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 231/236/246
-104.16.160.142 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 218/225/240
-104.16.160.143 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 226/236/260
-104.16.160.144 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 208/213/240
-104.16.160.145 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 208/216/235
-104.16.160.146 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/223/246
-104.16.160.147 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/213/222
-104.16.160.148 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/230/256
-104.16.160.149 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/216/233
-104.16.160.150 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 208/215/233
-104.16.160.151 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/213/225
-104.16.160.152 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/213/219
-104.16.160.153 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 222/230/240
-104.16.160.154 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 223/230/239
-104.16.160.155 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/211/219
-104.16.160.156 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 226/234/240
-104.16.160.157 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 232/238/249
-104.16.160.158 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/214/226
-104.16.160.159 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 219/222/229
-104.16.160.160 : xmt/rcv/%loss = 20/18/10%, min/avg/max = 200/212/224
-104.16.160.161 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/211/218
-104.16.160.162 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/208/216
-104.16.160.163 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 205/209/216
-104.16.160.164 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/216/240
-104.16.160.165 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/217/226
-104.16.160.166 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 223/239/250
-104.16.160.167 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 219/225/246
-104.16.160.168 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 204/213/229
-104.16.160.169 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 206/211/230
-104.16.160.170 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/220/229
-104.16.160.171 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/213/226
-104.16.160.172 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 208/214/226
-104.16.160.173 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 220/225/239
-104.16.160.174 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 219/231/256
-104.16.160.175 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 213/216/219
-104.16.160.176 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/226/236
-104.16.160.177 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/216/226
-104.16.160.178 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 211/217/236
-104.16.160.179 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 208/215/222
-104.16.160.180 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 209/213/223
-104.16.160.181 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 219/223/229
-104.16.160.182 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/212/219
-104.16.160.183 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 210/218/239
-104.16.160.184 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/241/260
-104.16.160.185 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/208/229
-104.16.160.186 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/233/251
-104.16.160.187 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 215/222/248
-104.16.160.188 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/222/236
-104.16.160.189 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 207/213/226
-104.16.160.190 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/224/246
-104.16.160.191 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 212/219/246
-104.16.160.192 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/220/232
-104.16.160.193 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 215/223/239
-104.16.160.194 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/242/248
-104.16.160.195 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 210/217/238
-104.16.160.196 : xmt/rcv/%loss = 20/7/65%, min/avg/max = 215/221/247
-104.16.160.197 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/212/233
-104.16.160.198 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 208/215/229
-104.16.160.199 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 202/210/229
-104.16.160.200 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 205/211/226
-104.16.160.201 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/218/251
-104.16.160.202 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 210/219/237
-104.16.160.203 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 203/217/231
-104.16.160.204 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 210/223/236
-104.16.160.205 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 209/216/239
-104.16.160.206 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 212/220/239
-104.16.160.207 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/240/247
-104.16.160.208 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/216/221
-104.16.160.209 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 219/225/254
-104.16.160.210 : xmt/rcv/%loss = 20/20/0%, min/avg/max = 218/226/240
-104.16.160.211 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/214/229
-104.16.160.212 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 229/240/259
-104.16.160.213 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 269/276/299
-104.16.160.214 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 202/211/226
-104.16.160.215 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 229/233/242
-104.16.160.216 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 229/237/243
-104.16.160.217 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 220/226/236
-104.16.160.218 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/246/256
-104.16.160.219 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/229/236
-104.16.160.220 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 212/223/240
-104.16.160.221 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 205/208/211
-104.16.160.222 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/216/221
-104.16.160.223 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/214/219
-104.16.160.224 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 206/212/226
-104.16.160.225 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 217/225/230
-104.16.160.226 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 212/219/226
-104.16.160.227 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 212/217/222
-104.16.160.228 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/216/230
-104.16.160.229 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 215/218/232
-104.16.160.230 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/221/232
-104.16.160.231 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 202/210/233
-104.16.160.232 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/216/226
-104.16.160.233 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/211/219
-104.16.160.234 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 209/215/226
-104.16.160.235 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 204/208/223
-104.16.160.236 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/221/236
-104.16.160.237 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 206/213/221
-104.16.160.238 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 221/231/243
-104.16.160.239 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 246/254/264
-104.16.160.240 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 212/217/223
-104.16.160.241 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 211/220/231
-104.16.160.242 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 213/222/235
-104.16.160.243 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/217/222
-104.16.160.244 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 247/252/262
-104.16.160.245 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/239
-104.16.160.246 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/218/229
-104.16.160.247 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/214/219
-104.16.160.248 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 215/219/232
-104.16.160.249 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/246/276
-104.16.160.250 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 229/238/266
-104.16.160.251 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 232/239/246
-104.16.160.252 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 239/247/262
-104.16.160.253 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/239
-104.16.160.254 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/222/230
-</code></pre>
-<p>一眼就找到丢包为0%的ip或则丢包率最低的ip, 我这里是<code>104.16.160.17</code>, 然后选择方法改host为</p>
-<pre><code class="language-Plain">104.16.160.17 notion.so
-104.16.160.17 www.notion.so
-104.16.160.17 msgstore.www.notion.so
-</code></pre>
-<h1 id="参考文献">参考文献</h1>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Notion 找到最快的host]]></title>
         <id>https://jerrywang.top/Notion 找到最快的host/</id>
         <link href="https://jerrywang.top/Notion 找到最快的host/">
         </link>
         <updated>2020-07-28T06:56:00.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="cloudflare-ip地址">Cloudflare ip地址</h1>
-<pre><code class="language-Plain">108.162.236.1/24 联通 走美国
-172.64.32.1/24 移动 走香港
-104.16.160.1/24 电信 走美国洛杉矶
-172.64.0.0/24 电信 美国旧金山
-104.20.157.0/24 联通 走日本
-104.28.14.0/24 移动 走新加坡
-</code></pre>
-<h1 id="安装fping">安装fping</h1>
-<p>Debian系列</p>
-<pre><code class="language-Shell">sudo apt install fping
-</code></pre>
-<p>Mac</p>
-<pre><code class="language-Shell">brew install fping
-</code></pre>
-<h1 id="使用fping筛选">使用fping筛选</h1>
-<p>选择你的宽带, 进行fping</p>
-<pre><code class="language-Shell">fping -g 104.16.160.1/24 -c 20 --quiet
-</code></pre>
-<p><code>-g</code>后面加ip的位置, <code>-c</code>后面是发送的字节数量, <code>--quiet</code>意思是不显示每个ping的输出, 而再最后给出ping的统计结果<br>
-结果如下:</p>
-<pre><code class="language-Shell">104.16.160.1   : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/224/268
-104.16.160.2   : xmt/rcv/%loss = 20/14/30%, min/avg/max = 240/251/268
-104.16.160.3   : xmt/rcv/%loss = 20/12/40%, min/avg/max = 212/220/249
-104.16.160.4   : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/218/238
-104.16.160.5   : xmt/rcv/%loss = 20/12/40%, min/avg/max = 211/216/227
-104.16.160.6   : xmt/rcv/%loss = 20/13/35%, min/avg/max = 223/235/252
-104.16.160.7   : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/213/236
-104.16.160.8   : xmt/rcv/%loss = 20/16/20%, min/avg/max = 240/247/272
-104.16.160.9   : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/212/219
-104.16.160.10  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 202/207/220
-104.16.160.11  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 243/249/261
-104.16.160.12  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/220/227
-104.16.160.13  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 219/226/242
-104.16.160.14  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 221/243/250
-104.16.160.15  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 240/247/265
-104.16.160.16  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/221/255
-104.16.160.17  : xmt/rcv/%loss = 20/20/0%, min/avg/max = 197/214/245
-104.16.160.18  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 218/228/249
-104.16.160.19  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/223/260
-104.16.160.20  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/223/250
-104.16.160.21  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/222/236
-104.16.160.22  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 210/225/256
-104.16.160.23  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 215/219/231
-104.16.160.24  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/219/233
-104.16.160.25  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/214/220
-104.16.160.26  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/229/240
-104.16.160.27  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/214/230
-104.16.160.28  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/226/260
-104.16.160.29  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 222/231/246
-104.16.160.30  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/216/230
-104.16.160.31  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/219/236
-104.16.160.32  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 222/229/241
-104.16.160.33  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 226/231/239
-104.16.160.34  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 229/231/239
-104.16.160.35  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 236/244/256
-104.16.160.36  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/228/246
-104.16.160.37  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 209/215/230
-104.16.160.38  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 215/223/256
-104.16.160.39  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/251/267
-104.16.160.40  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/217/232
-104.16.160.41  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 209/217/229
-104.16.160.42  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 228/234/249
-104.16.160.43  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 211/216/229
-104.16.160.44  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 231/243/260
-104.16.160.45  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/221/230
-104.16.160.46  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 211/216/230
-104.16.160.47  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 215/220/231
-104.16.160.48  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/236
-104.16.160.49  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 229/237/277
-104.16.160.50  : xmt/rcv/%loss = 20/8/60%, min/avg/max = 206/211/221
-104.16.160.51  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 211/221/229
-104.16.160.52  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/220/240
-104.16.160.53  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/211/216
-104.16.160.54  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/210/216
-104.16.160.55  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/218/232
-104.16.160.56  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/214/226
-104.16.160.57  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/228/317
-104.16.160.58  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 226/236/314
-104.16.160.59  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/218/290
-104.16.160.60  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/220/249
-104.16.160.61  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 207/216/232
-104.16.160.62  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/223/263
-104.16.160.63  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/218/257
-104.16.160.64  : xmt/rcv/%loss = 20/17/15%, min/avg/max = 246/258/280
-104.16.160.65  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/218/252
-104.16.160.66  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/226/242
-104.16.160.67  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 198/214/236
-104.16.160.68  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 213/222/229
-104.16.160.69  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/227/241
-104.16.160.70  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 208/216/236
-104.16.160.71  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/224/301
-104.16.160.72  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/228/308
-104.16.160.73  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 199/212/287
-104.16.160.74  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 208/218/282
-104.16.160.75  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 236/246/305
-104.16.160.76  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/246/304
-104.16.160.77  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 215/225/263
-104.16.160.78  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 229/242/290
-104.16.160.79  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/224/239
-104.16.160.80  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 218/225/249
-104.16.160.81  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/243/260
-104.16.160.82  : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/246/258
-104.16.160.83  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/215/226
-104.16.160.84  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/234/270
-104.16.160.85  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/218/253
-104.16.160.86  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/213/229
-104.16.160.87  : xmt/rcv/%loss = 20/14/30%, min/avg/max = 199/210/230
-104.16.160.88  : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/214/236
-104.16.160.89  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/217/229
-104.16.160.90  : xmt/rcv/%loss = 20/10/50%, min/avg/max = 210/218/226
-104.16.160.91  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/219/226
-104.16.160.92  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/220/226
-104.16.160.93  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/210/215
-104.16.160.94  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 199/205/210
-104.16.160.95  : xmt/rcv/%loss = 20/15/25%, min/avg/max = 239/244/267
-104.16.160.96  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/224/247
-104.16.160.97  : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/217/226
-104.16.160.98  : xmt/rcv/%loss = 20/9/55%, min/avg/max = 200/204/208
-104.16.160.99  : xmt/rcv/%loss = 20/13/35%, min/avg/max = 204/209/215
-104.16.160.100 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 232/238/249
-104.16.160.101 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/210/216
-104.16.160.102 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 216/222/226
-104.16.160.103 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/212/232
-104.16.160.104 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 229/234/240
-104.16.160.105 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 262/266/280
-104.16.160.106 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 226/233/244
-104.16.160.107 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 219/228/236
-104.16.160.108 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 216/220/232
-104.16.160.109 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/217/230
-104.16.160.110 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 207/217/260
-104.16.160.111 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 220/225/240
-104.16.160.112 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 215/223/248
-104.16.160.113 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/219/230
-104.16.160.114 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/249/335
-104.16.160.115 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/214/229
-104.16.160.116 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/222/236
-104.16.160.117 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 242/248/260
-104.16.160.118 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 207/219/294
-104.16.160.119 : xmt/rcv/%loss = 20/18/10%, min/avg/max = 208/217/284
-104.16.160.120 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 211/227/232
-104.16.160.121 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/221/267
-104.16.160.122 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 206/213/219
-104.16.160.123 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/214/244
-104.16.160.124 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 215/222/239
-104.16.160.125 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 210/219/239
-104.16.160.126 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/225/266
-104.16.160.127 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 209/222/239
-104.16.160.128 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/222/241
-104.16.160.129 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/218/237
-104.16.160.130 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 199/214/229
-104.16.160.131 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 229/235/259
-104.16.160.132 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 238/246/260
-104.16.160.133 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 211/219/236
-104.16.160.134 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/215/219
-104.16.160.135 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/221/231
-104.16.160.136 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 208/223/236
-104.16.160.137 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 213/220/230
-104.16.160.138 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/225/246
-104.16.160.139 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 210/221/240
-104.16.160.140 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 219/226/232
-104.16.160.141 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 231/236/246
-104.16.160.142 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 218/225/240
-104.16.160.143 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 226/236/260
-104.16.160.144 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 208/213/240
-104.16.160.145 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 208/216/235
-104.16.160.146 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/223/246
-104.16.160.147 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 208/213/222
-104.16.160.148 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/230/256
-104.16.160.149 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/216/233
-104.16.160.150 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 208/215/233
-104.16.160.151 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/213/225
-104.16.160.152 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/213/219
-104.16.160.153 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 222/230/240
-104.16.160.154 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 223/230/239
-104.16.160.155 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 205/211/219
-104.16.160.156 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 226/234/240
-104.16.160.157 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 232/238/249
-104.16.160.158 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/214/226
-104.16.160.159 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 219/222/229
-104.16.160.160 : xmt/rcv/%loss = 20/18/10%, min/avg/max = 200/212/224
-104.16.160.161 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 206/211/218
-104.16.160.162 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/208/216
-104.16.160.163 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 205/209/216
-104.16.160.164 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/216/240
-104.16.160.165 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/217/226
-104.16.160.166 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 223/239/250
-104.16.160.167 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 219/225/246
-104.16.160.168 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 204/213/229
-104.16.160.169 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 206/211/230
-104.16.160.170 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/220/229
-104.16.160.171 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/213/226
-104.16.160.172 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 208/214/226
-104.16.160.173 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 220/225/239
-104.16.160.174 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 219/231/256
-104.16.160.175 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 213/216/219
-104.16.160.176 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/226/236
-104.16.160.177 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 209/216/226
-104.16.160.178 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 211/217/236
-104.16.160.179 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 208/215/222
-104.16.160.180 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 209/213/223
-104.16.160.181 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 219/223/229
-104.16.160.182 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 209/212/219
-104.16.160.183 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 210/218/239
-104.16.160.184 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/241/260
-104.16.160.185 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/208/229
-104.16.160.186 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/233/251
-104.16.160.187 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 215/222/248
-104.16.160.188 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 216/222/236
-104.16.160.189 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 207/213/226
-104.16.160.190 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 206/224/246
-104.16.160.191 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 212/219/246
-104.16.160.192 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 216/220/232
-104.16.160.193 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 215/223/239
-104.16.160.194 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 236/242/248
-104.16.160.195 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 210/217/238
-104.16.160.196 : xmt/rcv/%loss = 20/7/65%, min/avg/max = 215/221/247
-104.16.160.197 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 205/212/233
-104.16.160.198 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 208/215/229
-104.16.160.199 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 202/210/229
-104.16.160.200 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 205/211/226
-104.16.160.201 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/218/251
-104.16.160.202 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 210/219/237
-104.16.160.203 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 203/217/231
-104.16.160.204 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 210/223/236
-104.16.160.205 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 209/216/239
-104.16.160.206 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 212/220/239
-104.16.160.207 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 236/240/247
-104.16.160.208 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 209/216/221
-104.16.160.209 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 219/225/254
-104.16.160.210 : xmt/rcv/%loss = 20/20/0%, min/avg/max = 218/226/240
-104.16.160.211 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 206/214/229
-104.16.160.212 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 229/240/259
-104.16.160.213 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 269/276/299
-104.16.160.214 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 202/211/226
-104.16.160.215 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 229/233/242
-104.16.160.216 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 229/237/243
-104.16.160.217 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 220/226/236
-104.16.160.218 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/246/256
-104.16.160.219 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 219/229/236
-104.16.160.220 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 212/223/240
-104.16.160.221 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 205/208/211
-104.16.160.222 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/216/221
-104.16.160.223 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/214/219
-104.16.160.224 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 206/212/226
-104.16.160.225 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 217/225/230
-104.16.160.226 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 212/219/226
-104.16.160.227 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 212/217/222
-104.16.160.228 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/216/230
-104.16.160.229 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 215/218/232
-104.16.160.230 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 212/221/232
-104.16.160.231 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 202/210/233
-104.16.160.232 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 206/216/226
-104.16.160.233 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 206/211/219
-104.16.160.234 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 209/215/226
-104.16.160.235 : xmt/rcv/%loss = 20/17/15%, min/avg/max = 204/208/223
-104.16.160.236 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 216/221/236
-104.16.160.237 : xmt/rcv/%loss = 20/9/55%, min/avg/max = 206/213/221
-104.16.160.238 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 221/231/243
-104.16.160.239 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 246/254/264
-104.16.160.240 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 212/217/223
-104.16.160.241 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 211/220/231
-104.16.160.242 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 213/222/235
-104.16.160.243 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 210/217/222
-104.16.160.244 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 247/252/262
-104.16.160.245 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/239
-104.16.160.246 : xmt/rcv/%loss = 20/16/20%, min/avg/max = 209/218/229
-104.16.160.247 : xmt/rcv/%loss = 20/10/50%, min/avg/max = 209/214/219
-104.16.160.248 : xmt/rcv/%loss = 20/12/40%, min/avg/max = 215/219/232
-104.16.160.249 : xmt/rcv/%loss = 20/14/30%, min/avg/max = 239/246/276
-104.16.160.250 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 229/238/266
-104.16.160.251 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 232/239/246
-104.16.160.252 : xmt/rcv/%loss = 20/15/25%, min/avg/max = 239/247/262
-104.16.160.253 : xmt/rcv/%loss = 20/13/35%, min/avg/max = 216/221/239
-104.16.160.254 : xmt/rcv/%loss = 20/11/45%, min/avg/max = 209/222/230
-</code></pre>
-<p>一眼就找到丢包为0%的ip或则丢包率最低的ip, 我这里是<code>104.16.160.17</code>, 然后选择方法改host为</p>
-<pre><code class="language-Plain">104.16.160.17 notion.so
-104.16.160.17 www.notion.so
-104.16.160.17 msgstore.www.notion.so
-</code></pre>
+        <content type="html"><![CDATA[<h1 id="原理">原理</h1>
+<h2 id="解析原理">解析原理</h2>
+<p>Notion使用cloudflare作为cdn，理论上来说，可以将Notion的域名解析到cloudflare cdn的任意节点。<br>
+国内解析的Notion域名在不被污染的情况下只有两个ip，而Cloudflare作为外国的云服务提供商以及各种人对cloudflare cdn的滥用，导致这两个ip并不是在任何情况下都能顺畅地连接。<br>
+Cloudflare在全球有180多万个ipv4节点，总是存在一些节点是可以顺畅连接的，将Notion的域名解析到这些ip上，就可以顺畅访问Notion了</p>
+<h2 id="筛选原理">筛选原理</h2>
+<p>cloudflare在全球有180多万个ipv4节点，如果要遍历测试，会耗费大量的网络资源和硬件资源，因此需要筛选。<br>
+ipv4地址有4位，在某种程度上，我们可以认为前三位相同，最后一位不同的ipv4地址具有接近的网络环境。因此，你需要选择你最后一位的幸运数字，从1到255，作为第一步筛选。只取第四位是你的幸运数字的ip地址，这样需要测试的ip地址便从180万减少到六七千。<br>
+在这六七千ip地址中，并不是所有地址都可以顺畅访问的，也不是将notion.so域名解析到这些地址都是可以访问的，因此下一步是测试可用于notion.so的ip地址，为了轻量化，我们选择尝试下载Notion主页www.notion.so的html。此次筛选后，会得到1000左右可用的ipv4地址。<br>
+最后一步便是正式的测速了。第一个测速的必要时ping的丢包率，把ping50次的丢包率控制到10%以下，便会得到十几个甚至几个ip地址。一般来说，只要ping不丢包就可以了，如果对速度有更高的要求，可以考虑测试不同ip解析下下载Notion的js文件:<br>
+<a href="https://www.notion.so/app-4ca8cd21ec209cfc38a6.js">https://www.notion.so/app-4ca8cd21ec209cfc38a6.js</a><br>
+不同端的解决方法具体如下</p>
+<h1 id="linux">Linux</h1>
+<p>克隆下面的储存库或者下载zip，按照具体的说明运行脚本即可</p>
+<h1 id="windows">Windows</h1>
+<p>ToDo，集成在此储存库中</p>
+<h1 id="macos">MacOS</h1>
+<p>我没有苹果电脑，希望有想法的大家一起出谋划策。希望直接给此储存库pr</p>
+<h1 id="android">Android</h1>
+<p>下载一个apk，叫做网络测试(我是在小米应用商店下载的，不充钱也可用，无广告)<br>
+<img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F668fdaec-1129-40c2-a5ce-e8009349cf34%2FScreenshot_2020-08-06-17-37-42-090_com.xiaomi.market.jpg" alt="" loading="lazy"><br>
+在ping里面，找到ping设置，设置ping批量的执行次数为50<br>
+<img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F0e30e1ec-2cea-4d7c-a36d-170391844703%2FScreenshot_2020-08-06-17-42-51-007_mellow.cyan.nettool.jpg" alt="" loading="lazy"><br>
+然后自己根据文章最开始的原理选择待筛选的ip地址，如果懒得找，可以复制下面文件中的ip地址到手机的粘贴版:<br>
+<a href="https://raw.githubusercontent.com/Jerrywang959/Notion-choose-ip/master/src/avaip.txt">https://raw.githubusercontent.com/Jerrywang959/Notion-choose-ip/master/src/avaip.txt</a><br>
+进入批量ping的界面，添加地址，把刚才复制的1000多个ip复制粘贴进去，完成添加<br>
+<img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Ff9b2b769-5abc-4130-8e55-4811d22333d4%2FScreenshot_2020-08-06-17-54-29-513_mellow.cyan.nettool.jpg" alt="" loading="lazy"><br>
+然后选择执行，一段时间后，执行完毕。点击右上角的排序可以对结果进行简单排序。任选一个绿色的ip即可作为可用ip。如果没有绿色的ip，可以进去橙色的ip查看详情，丢包率不超过20%都可以用<br>
+<img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F87e43eb7-29b2-428a-bceb-fe4a3a8fa6a8%2FScreenshot_2020-08-06-17-56-51-078_mellow.cyan.nettool.jpg" alt="" loading="lazy"><br>
+安卓端改hosts可以使用此软件<br>
+<img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fe5d9ab48-3d00-4746-901b-586879b67298%2FScreenshot_2020-08-06-18-10-38-810_com.xiaomi.market.jpg" alt="" loading="lazy"><br>
+打开后，添加一个dns或者直接用它的dns，改host需要改3个域名<br>
+<img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F98fbb4a1-9427-451e-9764-5f4c92aa0954%2FScreenshot_2020-08-06-18-11-36-574_cn.rubyfish.dns.client.jpg" alt="" loading="lazy"><br>
+其实对于安卓端来说，更好的是注册一个自己的红鱼安全dns，在系统设置里面设置“私人NDS”(或者叫做“安全DNS”)。在自己的红鱼dns里改host。</p>
+<h1 id="ios">ios</h1>
+<p>我没有ios系统的手机，希望有想法的大家一起出谋划策</p>
 <h1 id="to-do">TO-DO</h1>
 <h1 id="参考文献">参考文献</h1>
 ]]></content>
@@ -746,98 +260,6 @@ rss，即Really Simple Syndication，简易信息聚合。在这个信息爆炸�
 <li>把Security中的Authrntication改成VNC passwd而不是UNIX passwd（保护你的计算机，防止root密码泄露）</li>
 <li>在User &amp; Permissions中点击Add添加用户admin用户（如果只有你一个人用</li>
 </ol>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Adguardhome自建dns服务器]]></title>
-        <id>https://jerrywang.top/Adguardhome自建dns服务器/</id>
-        <link href="https://jerrywang.top/Adguardhome自建dns服务器/">
-        </link>
-        <updated>2020-07-23T20:34:29.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="为什么要自建dns服务器">为什么要自建dns服务器</h1>
-<p>作为一个时常访问github的公民，却因为一些你懂得的原因，无法访问raw.githubusercontent.com这一域名，有的时候连github都无法访问，比较苦恼。刚好手里有一台闲置的学生云服务器，于是便有了自建dns服务的想法。<br>
-作为一个编程小白，最简单的方法便是用docker容器部署应用了，经过一段时间的寻找，终于找到了<a href="https://github.com/AdguardTeam/AdGuardHome">AdGuard Home</a>这一在github开源的免费应用，它不仅可以一键搭建自己的dns服务器，还可以自定义dns规则，设置广告过滤，于是，折腾之旅开始。</p>
-<h1 id="安装adguard-home">安装Adguard Home</h1>
-<p>我用的是Debian 9 x64系统，在腾讯云上，首先安装依赖项</p>
-<pre><code class="language-Plain">apt-get install sudo nano bind9-host
-</code></pre>
-<p>下载 Adguard Home</p>
-<pre><code class="language-Plain">wget https://static.adguard.com/adguardhome/release/AdGuardHome_linux_amd64.tar.gz
-tar xvf AdGuardHome_linux_amd64.tar.gz
-cd AdGuardHome
-</code></pre>
-<p>执行安装命令</p>
-<pre><code class="language-Plain">sudo ./AdGuardHome -s install
-</code></pre>
-<p>运行AdGuardHome</p>
-<pre><code class="language-Plain">./AdGuardHome -s start
-</code></pre>
-<p>验证是否运行成功</p>
-<pre><code class="language-Plain">host doubleclick.net 127.0.0.1
-</code></pre>
-<p>若出现以下信息，则运行成功</p>
-<pre><code class="language-Plain">Using domain server:
-Name: 127.0.0.1
-Address: 127.0.0.1#53
-Aliases:
-
-Host doubleclick.net not found: 3(NXDOMAIN)
-</code></pre>
-<h1 id="初始化adguard-home">初始化Adguard Home</h1>
-<p>在本地浏览器中打开 http://你的服务器ip:3000 （记得开端口） 进行初始化配置，这一初始化配置主要是设置用户名密码以及设置dns服务器的运行地址（选择127.0.0.1就可以了）和端口。这里端口包括两个，一个是管理界面的端口，默认设置为80或者设置其他都可以，另外一个是dns服务器运行的端口，这个最好设置为53，因为很多设备都只支持53端口的dns解析。</p>
-<h1 id="配置adguard-home">配置Adguard Home</h1>
-<p>本地浏览器中打开http://你的服务器ip:你设置的管理面板端口主界面应该是这样的，正式使用之前，需要完成以下设置<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586523754731.png" alt="" loading="lazy"><br>
-UTOOLS1586523754731.png<br>
-<strong>设置上游dns服务器</strong><br>
-进入界面后，点击设置的dns设置，往下可以找到上游dns服务器的设置，默认的dns服务器在国外，连接不太顺畅，一般选择在国内的纯净dns或者大型dns服务商（污染问题可以通过自定义dns解决），我选的是114.114.114.114和119.29.29.29，并勾选通过同时查询所有上流服务器以使用并行查询加速解析。<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586522362197.png" alt="" loading="lazy"><br>
-UTOOLS1586522362197.png<br>
-然后检测dns并应用<br>
-<strong>设置白名单</strong><br>
-百度ip查询自己的ip地址，并写入。考虑到家庭网络的动态ip可以在后面写入 /8 或者 /16。若自己有多个公网ip，可以添加多个允许的ip，还以加上127.0.0.1(本地地址)，让云服务器访问自己的dns服务<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586522556881.png" alt="" loading="lazy"><br>
-<strong>过滤广告</strong><br>
-在常规设置中勾选全部项目<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586522666008.png" alt="" loading="lazy"><br>
-UTOOLS1586522666008.png<br>
-打开过滤器的封锁清单，勾选已经有的地址，并添加以下地址（这一过程会使网页卡顿，耐心等）。但这些规则并不是很适用于国内的广告商，我又加入了以下清单</p>
-<ol>
-<li>https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt</li>
-<li>https://easylist-downloads.adblockplus.org/easylistchina.txt</li>
-<li>https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/ABP-FX.txt</li>
-<li>https://gitee.com/privacy-protection-tools/anti-ad/raw/master/easylist.txt<br>
-更多广告过滤规则可见<a href="https://juejin.im/post/5d91666ef265da5b7326d71d">用上这个神器后，广告从此去无忧！(全平台免费支持，无需安装任何客户端软件)</a><br>
-设置完成后记得开UDP的53端口（而不是TCP），DNS服务器方可正常使用。因为过滤了很多广告，大大增加了网页浏览的体验。</li>
-</ol>
-<h1 id="自定义dns规则">自定义DNS规则</h1>
-<p>这一功能的存在是我一直使用AdGuard Home的原因，这一功能在官方文档也没有明确的说明，鄙人摸索了一段时间才找到。<br>
-打开过滤器中的dns重写，即为自定义dns规则。我们以github.io为例。<br>
-使用在服务器中输入</p>
-<pre><code class="language-Plain">host github.io
-</code></pre>
-<p>会出现4个ip地址，分别为 185.199.108.153、 185.199.109.153、 185.199.110.153、 185.199.111.153，这表面github有使用CDN加速服务，有的CDN ip是被屏蔽的，而有的没有。经过不停的测试，只有185.199.109.153这一ip没有被屏蔽，而host解析出来的的最优先域名并不一定是185.199.109.153，这就是为什么有时github.io打不开，但是多刷新几次就打开了。这里我们主动设置github.io解析到185.199.109.153，就可以顺畅地访问了。<br>
-<img src="https://mypictuchuang.oss-cn-shenzhen.aliyuncs.com/UTOOLS1586523375179.png" alt="" loading="lazy"><br>
-UTOOLS1586523375179.png<br>
-如果无法获得可供访问的ip，可以在此地址搜索域名的绕过CDN真实ip <a href="https://www.ipaddress.com/">IP Address.com</a>。若此ip也被屏蔽，则没有办法访问了，比如谷歌。</p>
-<h1 id="更多配置">更多配置</h1>
-<p>Adguard home用户界面已经设置的很人性化了，基本上不需要看文档，很多内容摸索界面就摸索出来了，若有需要，请参看<a href="https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration">AdGuard Home - Configuration</a></p>
-<h1 id="参考文献">参考文献</h1>
-<ol>
-<li><a href="https://github.com/AdguardTeam/AdGuardHome/wiki/VPS">Adguard home 官方wiki：在VPSV上搭建Adguard home</a></li>
-</ol>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[about]]></title>
-        <id>https://jerrywang.top/about/</id>
-        <link href="https://jerrywang.top/about/">
-        </link>
-        <updated>2020-07-23T20:34:24.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="关于本站">🏠 关于本站</h2>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<h2 id="联系我呀">📬 联系我呀</h2>
 ]]></content>
     </entry>
 </feed>

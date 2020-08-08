@@ -8,7 +8,7 @@
 <meta name="keywords" content="Jerry Blog">
 <meta name="description" content="分享知识与爱">
 <meta name="theme-color" content="#212529">
-<title>Deepin下WPS公式不能正常显示 | JY Blog</title>
+<title>Notion图床工具需求 | JY Blog</title>
 <link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/Jerrywang959/Jerrywang959.github.io@master/favicon.ico?v=1596896292288">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Jerrywang959/Jerrywang959.github.io@master/styles/main.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Jerrywang959/Jerrywang959.github.io@master/media/css/pisces.css">
@@ -39,8 +39,8 @@
   })();
 </script>
 
-  <meta name="description" content="Deepin下WPS公式不能正常显示" />
-  <meta name="keywords" content="Deepin,WPS" />
+  <meta name="description" content="Notion图床工具需求" />
+  <meta name="keywords" content="Notion" />
 </head>
 
 <body>
@@ -177,7 +177,8 @@
       <div class="sidebar-body pisces" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="https://cdn.jsdelivr.net/gh/Jerrywang959/Jerrywang959.github.io@master/images/avatar.png"/>
@@ -221,6 +222,192 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E9%85%8D%E7%BD%AE%E9%9C%80%E6%B1%82">配置需求</a></li>
+<li><a href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4">操作步骤</a></li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -308,8 +495,8 @@
           <div class="section bg-color post post-page">
             <header class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="https://jerrywang.top/Deepin下WPS公式不能正常显示/">
-      Deepin下WPS公式不能正常显示
+    <a class="post-title-link" href="https://jerrywang.top/Notion图床工具需求/">
+      Notion图床工具需求
     </a>
   </h1>
   <div class="post-meta">
@@ -317,7 +504,7 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span>发布于</span>
-      <span>2020-06-22</span>
+      <span>2020-08-06</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
@@ -326,14 +513,8 @@
       <span class="pc-show">分类于</span>
       
       
-      <a href="https://jerrywang.top/8050UKX8P7/">
-        <span>Deepin</span>
-      </a>、
-      
-      
-      
-      <a href="https://jerrywang.top/rIQvyeIYY0/">
-        <span>WPS</span>
+      <a href="https://jerrywang.top/WieDnQsRE/">
+        <span>Notion</span>
       </a>
       
       
@@ -347,12 +528,12 @@
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>131<span class="pc-show">字数</span></span>
+      <span>231<span class="pc-show">字数</span></span>
     </span>
     
     
     
-    <span id="/Deepin下WPS公式不能正常显示/" data-flag-title="Deepin下WPS公式不能正常显示" class="meta-item pc-show leancloud_visitors">
+    <span id="/Notion图床工具需求/" data-flag-title="Notion图床工具需求" class="meta-item pc-show leancloud_visitors">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-eye"></i>
       <span>浏览量：<span class="leancloud-visitors-count"></span></span>
@@ -361,15 +542,18 @@
   </div>
 </header>
             <div class="post-body next-md-body" id="post_body">
-              <p>1 问题：wps在显示数学公式时，出现乱码<br>
-2、解决方法：<br>
-（1）在终端：sudo apt remove <em>opensymbol</em>，输入y确认，这一步是卸载系统自带的symbol字体。<br>
-（2）然后下载symbol.ttf（见文件夹中的文件）<br>
-(3)启动”字体管理器”安装字体symbol.ttf。<br>
-（4）然后执行sudo fc-cache -fv<br>
-（5）将字体缓存，重新打开wps，应该已经可以了。<br>
-优点：应用这种方法，QQ字体不会变化，还是比较清晰</p>
-<p>转载自deepin论坛</p>
+              <p>建议集成到现有的工具中，如utools, picgo等其他工具，而不是做成一个单独的软件。可能用js做会好一点，但我对github上的Notion js轮子的功能不太了解</p>
+<h1 id="配置需求">配置需求</h1>
+<ol>
+<li>个人的token_v2，这个不是永久的，一旦手动退出登录就会失效。但只要不手动推出登录就不会失效。</li>
+<li>作为图床的page的url，需要设置页面为公开可读</li>
+</ol>
+<h1 id="操作步骤">操作步骤</h1>
+<ol>
+<li>复制图片到粘贴板，用token_v2模拟登录，上传图片到上面设置的公开图床page，并获取图片的亚马逊云地址，如</li>
+<li>转化为无token url。在上面的url中， <code>Untitled.png</code> 后面都去掉。然后把 <code>/</code> 替换为 <code>%2F</code>, <code>:</code> 替换为 <code>%3A</code> 。然后再整体的url前面加上 <a href="https://www.notion.so/image/"><code>https://www.notion.so/image/</code></a> 。例如，一个转化后的url为</li>
+<li>提供多种格式(markdown, html, url)到粘贴板</li>
+</ol>
 
             </div>
             <div class="post-footer">
@@ -380,7 +564,7 @@
     </li>
     <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://jerrywang.top/Deepin下WPS公式不能正常显示/" title="Deepin下WPS公式不能正常显示">https://jerrywang.top/Deepin下WPS公式不能正常显示/</a>
+      <a href="https://jerrywang.top/Notion图床工具需求/" title="Notion图床工具需求">https://jerrywang.top/Notion图床工具需求/</a>
     </li>
     <li class="post-copyright-license">
       <strong>版权声明： </strong>
@@ -389,23 +573,21 @@
   </ul>
   <div class="tags">
     
-      <a href="https://jerrywang.top/8050UKX8P7/"># Deepin</a>
-    
-      <a href="https://jerrywang.top/rIQvyeIYY0/"># WPS</a>
+      <a href="https://jerrywang.top/WieDnQsRE/"># Notion</a>
     
   </div>
   <div class="nav">
     <div class="nav-prev">
       
         <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="deepin下一些命令和配置文件" href="https://jerrywang.top/deepin下一些命令和配置文件/">deepin下一些命令和配置文件</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="deepin下一些命令和配置文件" href="https://jerrywang.top/deepin下一些命令和配置文件/">上一篇</a>
+        <a class="nav-pc-next" title="Deepin使用加密DNS(DOT, DOH)" href="https://jerrywang.top/Deepin使用加密DNS(DOT, DOH)/">Deepin使用加密DNS(DOT, DOH)</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="Deepin使用加密DNS(DOT, DOH)" href="https://jerrywang.top/Deepin使用加密DNS(DOT, DOH)/">上一篇</a>
       
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="Deepin编译最新linux内核" href="https://jerrywang.top/Deepin编译最新linux内核/">Deepin编译最新linux内核</a>
-        <a class="nav-mobile-next" title="Deepin编译最新linux内核" href="https://jerrywang.top/Deepin编译最新linux内核/">下一篇</a>
+        <a class="nav-pc-next" title="安装Linuxfirmware" href="https://jerrywang.top/安装Linuxfirmware/">安装Linuxfirmware</a>
+        <a class="nav-mobile-next" title="安装Linuxfirmware" href="https://jerrywang.top/安装Linuxfirmware/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
