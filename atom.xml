@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jerrywang.top</id>
     <title>JY Blog</title>
-    <updated>2020-08-11T02:20:08.756Z</updated>
+    <updated>2020-08-13T03:58:21.458Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jerrywang.top"/>
     <link rel="self" href="https://jerrywang.top/atom.xml"/>
@@ -71,6 +71,7 @@
 5、sudo update-initramfs -uk all                              #安装完毕更新内核启动映像
 </code></pre>
 <h1 id="参考文献">参考文献</h1>
+<p><a href="https://bbs.deepin.org/forum.php?mod=viewthread&amp;tid=198157">https://bbs.deepin.org/forum.php?mod=viewthread&amp;tid=198157</a></p>
 ]]></content>
     </entry>
     <entry>
@@ -92,19 +93,22 @@ ipv4地址有4位，在某种程度上，我们可以认为前三位相同，最
 <a href="https://www.notion.so/app-4ca8cd21ec209cfc38a6.js">https://www.notion.so/app-4ca8cd21ec209cfc38a6.js</a><br>
 不同端的解决方法具体如下</p>
 <h1 id="linux">Linux</h1>
-<p>克隆下面的储存库或者下载zip，按照具体的说明运行脚本即可</p>
+<p>克隆下面的储存库或者下载zip，按照具体的说明运行脚本即可<br>
+<a href="https://github.com/Jerrywang959/Notion-choose-ip">https://github.com/Jerrywang959/Notion-choose-ip</a></p>
 <h1 id="windows">Windows</h1>
-<p>ToDo，集成在此储存库中</p>
+<p>ToDo，集成在此储存库中<br>
+<a href="https://github.com/Jerrywang959/Notion-choose-ip">https://github.com/Jerrywang959/Notion-choose-ip</a></p>
 <h1 id="macos">MacOS</h1>
-<p>我没有苹果电脑，希望有想法的大家一起出谋划策。希望直接给此储存库pr</p>
+<p>我没有苹果电脑，希望有想法的大家一起出谋划策。希望直接给此储存库pr<br>
+<a href="https://github.com/Jerrywang959/Notion-choose-ip">https://github.com/Jerrywang959/Notion-choose-ip</a></p>
 <h1 id="android">Android</h1>
 <p>下载一个apk，叫做网络测试(我是在小米应用商店下载的，不充钱也可用，无广告)<br>
 <img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F668fdaec-1129-40c2-a5ce-e8009349cf34%2FScreenshot_2020-08-06-17-37-42-090_com.xiaomi.market.jpg" alt="" loading="lazy"><br>
 在ping里面，找到ping设置，设置ping批量的执行次数为50<br>
 <img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F0e30e1ec-2cea-4d7c-a36d-170391844703%2FScreenshot_2020-08-06-17-42-51-007_mellow.cyan.nettool.jpg" alt="" loading="lazy"><br>
 然后自己根据文章最开始的原理选择待筛选的ip地址，如果懒得找，可以复制下面文件中的ip地址到手机的粘贴版:<br>
-<a href="https://raw.githubusercontent.com/Jerrywang959/Notion-choose-ip/master/src/avaip.txt">https://raw.githubusercontent.com/Jerrywang959/Notion-choose-ip/master/src/avaip.txt</a><br>
-进入批量ping的界面，添加地址，把刚才复制的1000多个ip复制粘贴进去，完成添加<br>
+<a href="https://cdn.jsdelivr.net/gh/Jerrywang959/Notion-choose-ip@master/src/avaip.txt">https://cdn.jsdelivr.net/gh/Jerrywang959/Notion-choose-ip@master/src/avaip.txt</a><br>
+进入批量ping的界面，添加地址，把刚才复制的多个ip复制粘贴进去，完成添加<br>
 <img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Ff9b2b769-5abc-4130-8e55-4811d22333d4%2FScreenshot_2020-08-06-17-54-29-513_mellow.cyan.nettool.jpg" alt="" loading="lazy"><br>
 然后选择执行，一段时间后，执行完毕。点击右上角的排序可以对结果进行简单排序。任选一个绿色的ip即可作为可用ip。如果没有绿色的ip，可以进去橙色的ip查看详情，丢包率不超过20%都可以用<br>
 <img src="https://www.notion.so/image/https%3A%2F%2Fs3.us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F87e43eb7-29b2-428a-bceb-fe4a3a8fa6a8%2FScreenshot_2020-08-06-17-56-51-078_mellow.cyan.nettool.jpg" alt="" loading="lazy"><br>
@@ -117,6 +121,8 @@ ipv4地址有4位，在某种程度上，我们可以认为前三位相同，最
 <p>我没有ios系统的手机，希望有想法的大家一起出谋划策</p>
 <h1 id="to-do">TO-DO</h1>
 <h1 id="参考文献">参考文献</h1>
+<p><a href="https://linmi.cc/6133.html">https://linmi.cc/6133.html</a><br>
+<a href="https://github.com/schweikert/fping/blob/develop/doc/fping.pod">https://github.com/schweikert/fping/blob/develop/doc/fping.pod</a></p>
 ]]></content>
     </entry>
     <entry>
