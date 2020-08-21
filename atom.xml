@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jerrywang.top</id>
     <title>JY Blog</title>
-    <updated>2020-08-13T03:58:21.458Z</updated>
+    <updated>2020-08-21T14:30:20.452Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jerrywang.top"/>
     <link rel="self" href="https://jerrywang.top/atom.xml"/>
@@ -63,7 +63,9 @@
         <link href="https://jerrywang.top/安装Linuxfirmware/">
         </link>
         <updated>2020-08-01T05:26:00.000Z</updated>
-        <content type="html"><![CDATA[<p>核心命令</p>
+        <content type="html"><![CDATA[<p>下载地址:<br>
+<a href="https://mirrors.tuna.tsinghua.edu.cn/kernel/firmware/">https://mirrors.tuna.tsinghua.edu.cn/kernel/firmware/</a></p>
+<p>核心命令</p>
 <pre><code class="language-Shell">1、tar -xavf linux-firmware-20200721.tar.xz         #解压
 2、cd linux-firmware-20200721                             #进入目录
 3、make check                                                                  #检查固件（小声BB，一检查就是一堆东西no exist）
@@ -80,7 +82,8 @@
         <link href="https://jerrywang.top/Notion 找到最快的host/">
         </link>
         <updated>2020-07-28T06:56:00.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="原理">原理</h1>
+        <content type="html"><![CDATA[<p>原文链接: <a href="https://www.notion.so/jerrywang959/Notion-host-99260615ab2e41489119738b19cda456">https://www.notion.so/jerrywang959/Notion-host-99260615ab2e41489119738b19cda456</a></p>
+<h1 id="原理">原理</h1>
 <h2 id="解析原理">解析原理</h2>
 <p>Notion使用cloudflare作为cdn，理论上来说，可以将Notion的域名解析到cloudflare cdn的任意节点。<br>
 国内解析的Notion域名在不被污染的情况下只有两个ip，而Cloudflare作为外国的云服务提供商以及各种人对cloudflare cdn的滥用，导致这两个ip并不是在任何情况下都能顺畅地连接。<br>
